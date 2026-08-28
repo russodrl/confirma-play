@@ -779,7 +779,7 @@ const walkFrames = Array.from({ length: 6 }, () => new Image());
 const flightFrames = Array.from({ length: 24 }, () => new Image());
 const jumpFrames = Array.from({ length: 24 }, () => new Image());
 const WALK_ANIMATION_SOURCE = 'original-6-frames';
-const GAME_FRAME_VERSION = 'walk6-source-v1';
+const GAME_FRAME_VERSION = 'walk6-motion-v2';
 const versionedGameFrame = (path) => `${path}?v=${GAME_FRAME_VERSION}`;
 nickSprites.crawl.src = '/nick-7meses/assets/game/nick-crawl.png';
 nickSprites.walk.src = '/nick-7meses/assets/game/nick-walk.png';
@@ -862,6 +862,7 @@ const basePowerups = [
 ];
 let obstacles = [];
 let flyingBirds = [];
+let birdCollisionsEnabled = true;
 let initialStars = [];
 let initialPowerups = [];
 let currentLevelSeed = 0;
@@ -1666,7 +1667,7 @@ function drawNick(time) {
   } else {
     const speedProgress = Math.max(0, Math.min(1, (stage.speed - SPEED_PROFILE.crawlStart) / (SPEED_PROFILE.walkEnd - SPEED_PROFILE.crawlStart)));
     const sourceRate = (mode === 'crawl' ? .78 : .88) + speedProgress * .34;
-    const animationRate = sourceRate * (frames.length / 24);
+    const animationRate = sourceRate * (mode === 'walk' ? .5 : 1);
     poseProgress = sampledTime / (1000 / CHARACTER_ANIMATION_FPS) * animationRate;
   }
   const baseIndex = Math.floor(poseProgress);
@@ -2043,7 +2044,6 @@ function updateGame(dt) {
     player.powerRemaining = Math.max(0, player.powerRemaining - dt);
     if (player.powerRemaining === 0) {
       player.power = null;
-      player.vy = Math.max(player.vy, 0);
     }
   }
   if (player.speedBoostRemaining > 0) {
@@ -2055,8 +2055,9 @@ function updateGame(dt) {
   const previousY = player.y;
   const wasGrounded = player.grounded;
   if (player.power === 'flight') {
-    player.y += (player.flightTargetY - player.y) * Math.min(1, dt * 6.5);
-    player.vy = 0;
+    const nextY = player.y + (player.flightTargetY - player.y) * Math.min(1, dt * 6.5);
+    player.vy = (nextY - player.y) / Math.max(dt, .001);
+    player.y = nextY;
     player.grounded = false;
   } else {
     if (keys.jumpHeld && player.vy < 0 && player.jumpHold < MAX_JUMP_HOLD) {
@@ -2107,8 +2108,7 @@ function updateGame(dt) {
     }
   });
   if (player.speedBoostExitGrace && !overlapsObstacle) player.speedBoostExitGrace = false;
-  flyingBirds.forEach((bird) => {
-    if (bird.mode !== 'hover') return;
+  if (birdCollisionsEnabled) flyingBirds.forEach((bird) => {
     if (bird.mode === 'cross' && (!bird.flightStarted || bird.flightFinished)) return;
     const position = getBirdPosition(bird, currentGameFrameTime);
     const birdHitbox = getBirdHitbox(bird, position);
@@ -2278,7 +2278,7 @@ window.__nickGameDebug = {
     distinctFramesByAnimation: { crawl: 24, walk: 6, flight: 24, jump: 24 },
     frameGeneration: { crawl: 'motion-compensated-no-crossfade', walk: WALK_ANIMATION_SOURCE, flight: 'motion-compensated-no-crossfade', jump: 'motion-compensated-no-crossfade' },
     walkSourceFrames: true,
-    walkPlaybackScale: walkFrames.length / 24,
+    walkPlaybackScale: .5,
     sharedWalkJumpCanvas: true,
     sharedWalkJumpRenderHeight: 150,
     spritePivot: 'bottom-center',
@@ -2295,9 +2295,9 @@ window.__nickGameDebug = {
     pickupReactions: ['doubleJump','flight','life','speedBoost'],
     cloudDrift: true,
     birdObstacleCount: flyingBirds.length,
-    hazardousBirdCount: flyingBirds.filter((bird) => bird.mode === 'hover').length,
-    birdCollisionMode: 'hover-only',
-    crossBirdsDecorative: true,
+    hazardousBirdCount: flyingBirds.length,
+    birdCollisionMode: 'all-active',
+    crossBirdsDecorative: false,
     birdDirection: 'right-to-left',
     birdModes: Object.fromEntries(['cross','hover'].map((mode) => [mode, flyingBirds.filter((bird) => bird.mode === mode).length])),
     birdHeightRange: { min: Math.min(...flyingBirds.map((bird) => bird.baseY)), max: Math.max(...flyingBirds.map((bird) => bird.baseY)) },
@@ -2392,6 +2392,7 @@ window.__nickGameDebug = {
   setMusicEnabled,
   advanceMusicTrack: advanceMusicPlaylist,
   setPowerTutorialEnabled,
+  setBirdCollisionsEnabled: (enabled) => { birdCollisionsEnabled = Boolean(enabled); },
   getPreferences: () => ({
     musicEnabled,
     powerTutorialEnabled,
