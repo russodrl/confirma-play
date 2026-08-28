@@ -1,0 +1,10 @@
+{
+  "name": "Confirma Play",
+  "short_name": "Confirma Play",
+  "description": "Convites digitais com confirmação de presença e experiências interativas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071329",
+  "theme_color": "#071329",
+  "icons": []
+}
