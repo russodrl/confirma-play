@@ -960,7 +960,17 @@ function createProceduralLevel(seed) {
     };
   }).sort((a, b) => a.x - b.x);
   flyingBirds = baseFlyingBirds.map((bird, index) => {
-    const x = Math.round(bird.x + jitter(150));
+    const preferredX = Math.round(bird.x + jitter(150));
+    const safeGap = bird.mode === 'hover'
+      ? obstacles.slice(1).map((obstacle, obstacleIndex) => {
+        const previous = obstacles[obstacleIndex];
+        const left = previous.x + previous.w;
+        const right = obstacle.x;
+        return { gap: right - left, x: Math.round((left + right) / 2) };
+      }).filter((candidate) => candidate.gap >= 320)
+        .sort((a, b) => Math.abs(a.x - preferredX) - Math.abs(b.x - preferredX))[0]
+      : null;
+    const x = safeGap?.x ?? preferredX;
     return {
       ...bird,
       x,
@@ -1015,9 +1025,11 @@ function getObstacleHitbox(obstacle) {
     ? { left: obstacle.w * .25, right: obstacle.w * .25, top: 6 }
     : obstacle.type === 2
       ? { left: 4, right: obstacle.w * .08, top: 4 }
-      : obstacle.type === 5
-        ? { left: 26, right: 26, top: 42 }
-        : { left: 4, right: 4, top: 3 };
+      : obstacle.type === 3
+        ? { left: 8, right: 8, top: 16 }
+        : obstacle.type === 5
+          ? { left: 26, right: 26, top: 42 }
+          : { left: 4, right: 4, top: 3 };
   return {
     left: obstacle.x + inset.left,
     right: obstacle.x + obstacle.w - inset.right,
@@ -1152,7 +1164,7 @@ function resetGame(seed = randomLevelSeed()) {
     slowdownRemaining: 0, baseSpeed: 0, targetSpeed: 0, pickupReaction: null, pickupReactionStartedAt: 0,
     jumpAnimationElapsed: 0, landingAnimationRemaining: 0,
     jumpsUsed: 0, jumpHold: 0, power: null, powerRemaining: 0, speedBoostRemaining: 0, speedBoostExitGrace: false, flightTargetY: 220, minimumY: GROUND_Y,
-    lives: 3, notice: '', noticeRemaining: 0, winStatus: '', scoreStatus: '', elapsedTime: 0
+    lives: 3, notice: '', noticeRemaining: 0, winStatus: '', scoreStatus: '', elapsedTime: 0, lastCollisionType: null
   };
   stars = initialStars.map((star, index) => ({ ...star, taken: false, pulse: index }));
   platforms.forEach((platform, index) => stars.push(moveStarClearOfPlatforms({ x: platform.x + platform.w / 2, y: platform.y - 58, taken: false, pulse: index + initialStars.length, platformStar: true })));
@@ -1656,7 +1668,7 @@ function drawNick(time) {
   const baseIndex = Math.floor(poseProgress);
   const frameIndex = loops ? baseIndex % frames.length : Math.min(frames.length - 1, baseIndex);
   const cyclePhase = poseProgress / frames.length;
-  const bob = mode === 'crawl' ? Math.sin(cyclePhase * Math.PI * 2) * 1.5 : mode === 'walk' ? Math.sin(cyclePhase * Math.PI * 2) : mode === 'flight' ? Math.sin(cyclePhase * Math.PI * 2) * 3 : 0;
+  const bob = 0;
   const currentFrame = frames[frameIndex];
 
   const fallback = mode === 'crawl' ? nickSprites.crawl : nickSprites.walk;
@@ -1686,7 +1698,7 @@ function drawNick(time) {
     if (player.pickupReaction === 'speedBoost') ctx.translate(Math.sin(reactionProgress * Math.PI * 12) * 6, 0);
     drawPickupReaction(player.pickupReaction, reactionProgress, spriteHeight);
   }
-  const wobble = mode === 'flight' ? Math.sin(time * .004) * .035 : 0;
+  const wobble = 0;
   const auraCenterX = 0;
   const auraCenterY = mode === 'crawl' ? -43 : mode === 'flight' ? -59 : -55;
   if (player.power) {
@@ -1832,6 +1844,7 @@ function releaseObstacleLockIfPassed() {
 function registerObstacleHit(obstacle, hitbox = null) {
   if (player.obstacleLockRight !== null || player.hitTimer > 0 || gameOver || player.power === 'flight' || player.speedBoostExitGrace) return;
   player.lives = Math.max(0, player.lives - 1);
+  player.lastCollisionType = hitbox?.type ?? obstacle?.type ?? 'unknown';
   player.obstacleLockRight = hitbox?.right ?? (obstacle ? obstacle.x + obstacle.w : player.x + 30);
   player.hitTimer = 1.15;
   player.slowdownRemaining = HIT_SLOWDOWN_DURATION;
@@ -2091,6 +2104,7 @@ function updateGame(dt) {
   });
   if (player.speedBoostExitGrace && !overlapsObstacle) player.speedBoostExitGrace = false;
   flyingBirds.forEach((bird) => {
+    if (bird.mode !== 'hover') return;
     if (bird.mode === 'cross' && (!bird.flightStarted || bird.flightFinished)) return;
     const position = getBirdPosition(bird, currentGameFrameTime);
     const birdHitbox = getBirdHitbox(bird, position);
@@ -2265,12 +2279,19 @@ window.__nickGameDebug = {
     opaqueFramesOnly: true,
     walkWhiteArtifactsFixed: true,
     walkHeadStabilized: true,
-    walkBobAmplitude: 1,
+    headStabilizedActions: 4,
+    crawlBobAmplitude: 0,
+    walkBobAmplitude: 0,
+    flightBobAmplitude: 0,
     walkWobbleRadians: 0,
+    flightWobbleRadians: 0,
     auraCentered: true,
     pickupReactions: ['doubleJump','flight','life','speedBoost'],
     cloudDrift: true,
     birdObstacleCount: flyingBirds.length,
+    hazardousBirdCount: flyingBirds.filter((bird) => bird.mode === 'hover').length,
+    birdCollisionMode: 'hover-only',
+    crossBirdsDecorative: true,
     birdDirection: 'right-to-left',
     birdModes: Object.fromEntries(['cross','hover'].map((mode) => [mode, flyingBirds.filter((bird) => bird.mode === mode).length])),
     birdHeightRange: { min: Math.min(...flyingBirds.map((bird) => bird.baseY)), max: Math.max(...flyingBirds.map((bird) => bird.baseY)) },
@@ -2408,7 +2429,7 @@ window.__nickGameDebug = {
   jumpPress,
   jumpRelease,
   setFlightTarget: (y) => { player.flightTargetY = Math.max(90, Math.min(GROUND_Y - 28, y)); },
-  getState: () => ({ x: player.x, y: player.y, minimumY: player.minimumY, vy: player.vy, speed: player.targetSpeed, baseSpeed: player.baseSpeed, slowdownRemaining: player.slowdownRemaining, grounded: player.grounded, landingAnimationRemaining: player.landingAnimationRemaining, jumpsUsed: player.jumpsUsed, power: player.power, powerRemaining: player.powerRemaining, speedBoostRemaining: player.speedBoostRemaining, speedBoostExitGrace: player.speedBoostExitGrace, activePowers: [player.power, player.speedBoostRemaining > 0 ? 'speedBoost' : null].filter(Boolean), lives: player.lives, obstacleLocked: player.obstacleLockRight !== null, elapsedTime: player.elapsedTime, score: player.score, gameOver, gameWon, winStatus: player.winStatus, scoreStatus: player.scoreStatus })
+  getState: () => ({ x: player.x, y: player.y, minimumY: player.minimumY, vy: player.vy, speed: player.targetSpeed, baseSpeed: player.baseSpeed, slowdownRemaining: player.slowdownRemaining, grounded: player.grounded, landingAnimationRemaining: player.landingAnimationRemaining, jumpsUsed: player.jumpsUsed, power: player.power, powerRemaining: player.powerRemaining, speedBoostRemaining: player.speedBoostRemaining, speedBoostExitGrace: player.speedBoostExitGrace, activePowers: [player.power, player.speedBoostRemaining > 0 ? 'speedBoost' : null].filter(Boolean), lives: player.lives, obstacleLocked: player.obstacleLockRight !== null, lastCollisionType: player.lastCollisionType, elapsedTime: player.elapsedTime, score: player.score, gameOver, gameWon, winStatus: player.winStatus, scoreStatus: player.scoreStatus })
 };
 
 $('#startGame').addEventListener('click', () => {

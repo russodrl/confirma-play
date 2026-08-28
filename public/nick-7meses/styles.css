@@ -185,6 +185,8 @@ h1 em::after { content: ""; position: absolute; height: 10px; background: var(--
 @keyframes marquee { to { transform: translateX(calc(-50% - 14px)); } }
 
 .section { max-width: 1240px; margin: 0 auto; padding: 110px 24px; }
+.album-section { padding-bottom: 32px; }
+.game-section { padding-top: 40px; }
 .section.event-details { padding: 72px 24px 310px; }
 .section-heading { max-width: 720px; margin-bottom: 48px; }
 .section-heading h2, .details-card h2, .bot-card h2, .final-cta h2 { font-size: clamp(38px, 5vw, 64px); line-height: 1.03; letter-spacing: -.04em; margin: 12px 0 18px; }
@@ -548,6 +550,8 @@ footer small a { color: #b9d2f1; }
   .invite-frame { width: min(76%, 360px); }
   .donald-hero { width: 135px; left: 0; bottom: -2px; }
   .section { padding: 82px 18px; }
+  .album-section { padding-bottom: 16px; }
+  .game-section { padding-top: 24px; }
   .rsvp-section { padding-top: 122px; scroll-margin-top: 110px; }
   .section.event-details { padding: 72px 18px 240px; }
   .donald-details-cutout { left: 4px; right: auto; bottom: 10px; width: auto; height: 175px; max-width: 215px; }
