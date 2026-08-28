@@ -778,13 +778,15 @@ const crawlFrames = Array.from({ length: 24 }, () => new Image());
 const walkFrames = Array.from({ length: 24 }, () => new Image());
 const flightFrames = Array.from({ length: 24 }, () => new Image());
 const jumpFrames = Array.from({ length: 24 }, () => new Image());
+const GAME_FRAME_VERSION = '43ca9ad';
+const versionedGameFrame = (path) => `${path}?v=${GAME_FRAME_VERSION}`;
 nickSprites.crawl.src = '/nick-7meses/assets/game/nick-crawl.png';
 nickSprites.walk.src = '/nick-7meses/assets/game/nick-walk.png';
 nickSprites.run.src = '/nick-7meses/assets/game/nick-run.png';
-crawlFrames.forEach((frame, index) => { frame.src = `/nick-7meses/assets/game/crawl-frames/crawl-${index + 1}.png`; });
-walkFrames.forEach((frame, index) => { frame.src = `/nick-7meses/assets/game/walk-frames/walk-${index + 1}.png`; });
-flightFrames.forEach((frame, index) => { frame.src = `/nick-7meses/assets/game/flight-frames/flight-${index + 1}.png`; });
-jumpFrames.forEach((frame, index) => { frame.src = `/nick-7meses/assets/game/jump-frames/jump-${index + 1}.png`; });
+crawlFrames.forEach((frame, index) => { frame.src = versionedGameFrame(`/nick-7meses/assets/game/crawl-frames/crawl-${index + 1}.png`); });
+walkFrames.forEach((frame, index) => { frame.src = versionedGameFrame(`/nick-7meses/assets/game/walk-frames/walk-${index + 1}.png`); });
+flightFrames.forEach((frame, index) => { frame.src = versionedGameFrame(`/nick-7meses/assets/game/flight-frames/flight-${index + 1}.png`); });
+jumpFrames.forEach((frame, index) => { frame.src = versionedGameFrame(`/nick-7meses/assets/game/jump-frames/jump-${index + 1}.png`); });
 const donaldImage = new Image();
 donaldImage.src = '/nick-7meses/assets/donald-feliz.png';
 
@@ -1224,11 +1226,11 @@ function showGameDialogue(text, { hint = '', buttonLabel = 'Continuar', onContin
   const startButton = $('#startGame');
   const dialogueImage = $('#gameDialogue > img');
   const reactionImages = {
-    talk: '/nick-7meses/assets/game/walk-frames/walk-21.png',
-    doubleJump: '/nick-7meses/assets/game/jump-frames/jump-11.png',
-    flight: '/nick-7meses/assets/game/flight-frames/flight-1.png',
-    life: '/nick-7meses/assets/game/crawl-frames/crawl-1.png',
-    speedBoost: '/nick-7meses/assets/game/walk-frames/walk-13.png'
+    talk: versionedGameFrame('/nick-7meses/assets/game/walk-frames/walk-21.png'),
+    doubleJump: versionedGameFrame('/nick-7meses/assets/game/jump-frames/jump-11.png'),
+    flight: versionedGameFrame('/nick-7meses/assets/game/flight-frames/flight-1.png'),
+    life: versionedGameFrame('/nick-7meses/assets/game/crawl-frames/crawl-1.png'),
+    speedBoost: versionedGameFrame('/nick-7meses/assets/game/walk-frames/walk-13.png')
   };
   $('#gameDialogue').hidden = false;
   $('#gameDialogue').dataset.reaction = reactionType;
