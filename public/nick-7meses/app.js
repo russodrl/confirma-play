@@ -1155,6 +1155,15 @@ function setupStoryMarquee() {
 setupStoryMarquee();
 const GROUND_SURFACE_OFFSET = 0;
 const CRAWL_VISUAL_BOTTOM_OFFSET = 10 - 128 * (30 / 600);
+const VICTORY_LAYOUT = Object.freeze({
+  bubble: Object.freeze({ x: 190, y: 90, width: 580, height: 216, bottom: 306 }),
+  button: Object.freeze({ x: 360, y: 240, width: 240, height: 42 }),
+  buttonLabel: 'Jogar novamente',
+  prizeText: 'Voce ganhou um brinde muito especial',
+  prizeY: 347,
+  gapAboveButton: 24,
+  gapBelowButton: 24
+});
 
 function getGameMessageAt(progress) {
   const normalized = Math.max(0, Math.min(.999999, progress));
@@ -1195,7 +1204,9 @@ function resetGame(seed = randomLevelSeed()) {
   canvas.dataset.jumpsUsed = '0';
   canvas.dataset.lives = '3';
   canvas.dataset.gameOver = 'false';
+  canvas.dataset.replayReady = 'false';
   canvas.dataset.elapsedMs = '0';
+  $('#restartGame').textContent = 'Recomeçar';
   $('#powerLabel').textContent = 'Nenhum';
   $('#livesLabel').textContent = '❤️❤️❤️';
   $('#livesStatus').dataset.empty = 'false';
@@ -1807,13 +1818,16 @@ function drawWorld(time) {
   drawNick(time);
 
   if (gameWon) {
-    ctx.fillStyle = 'rgba(12,50,109,.83)'; ctx.fillRect(190, 120, 580, 175);
+    const { bubble, button } = VICTORY_LAYOUT;
+    ctx.fillStyle = 'rgba(12,50,109,.88)'; ctx.beginPath(); ctx.roundRect(bubble.x, bubble.y, bubble.width, bubble.height, 28); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
-    ctx.font = '900 42px Fraunces'; ctx.fillText('Cheguei na minha festa!', 480, 188);
-    ctx.font = '700 18px DM Sans'; ctx.fillText(`Tempo: ${formatGameTime(player.elapsedTime * 1000)} • Estrelinhas: ${player.score}`, 480, 220);
-    ctx.font = '700 14px DM Sans'; ctx.fillText(player.winStatus || player.scoreStatus || 'Preparando seu resultado...', 480, 247);
-    ctx.fillStyle = '#f6c84c'; ctx.beginPath(); ctx.roundRect(360, 260, 240, 34, 17); ctx.fill();
-    ctx.fillStyle = '#0c326d'; ctx.font = '800 14px DM Sans'; ctx.fillText('Clique em Recomeçar', 480, 283);
+    ctx.font = '900 42px Fraunces'; ctx.fillText('Cheguei na minha festa!', 480, 150);
+    ctx.font = '700 18px DM Sans'; ctx.fillText(`Tempo: ${formatGameTime(player.elapsedTime * 1000)} • Estrelinhas: ${player.score}`, 480, 184);
+    ctx.font = '700 14px DM Sans'; ctx.fillText(player.scoreStatus || 'Preparando seu resultado...', 480, 216);
+    ctx.fillStyle = '#f6c84c'; ctx.beginPath(); ctx.roundRect(button.x, button.y, button.width, button.height, 21); ctx.fill();
+    ctx.fillStyle = '#0c326d'; ctx.font = '800 15px DM Sans'; ctx.fillText(VICTORY_LAYOUT.buttonLabel, 480, 267);
+    ctx.font = '900 20px DM Sans'; ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.strokeText(VICTORY_LAYOUT.prizeText, 480, VICTORY_LAYOUT.prizeY);
+    ctx.fillStyle = '#0c326d'; ctx.fillText(VICTORY_LAYOUT.prizeText, 480, VICTORY_LAYOUT.prizeY);
     ctx.textAlign = 'start';
   }
 }
@@ -1946,6 +1960,13 @@ function formatGameTime(durationMs) {
   const seconds = Math.floor(totalSeconds % 60);
   const hundredths = Math.floor((totalSeconds % 1) * 100);
   return `${minutes}:${String(seconds).padStart(2, '0')}.${String(hundredths).padStart(2, '0')}`;
+}
+
+function markGameWon() {
+  gameWon = true;
+  canvas.dataset.won = 'true';
+  canvas.dataset.replayReady = 'true';
+  $('#restartGame').textContent = VICTORY_LAYOUT.buttonLabel;
 }
 
 function renderLeaderboard(entries = []) {
@@ -2139,7 +2160,7 @@ function updateGame(dt) {
   cameraX += ((player.x - 260) - cameraX) * Math.min(1, dt * 4.5);
   cameraX = Math.max(0, Math.min(WORLD_WIDTH - 960, cameraX));
   if (player.x > WORLD_WIDTH - 220 && !gameWon) {
-    gameWon = true;
+    markGameWon();
     handleGameCompletion();
   }
   canvas.dataset.distance = String(Math.round(player.x));
@@ -2157,7 +2178,7 @@ function updateGame(dt) {
 }
 
 function gameLoop(time) {
-  const dt = Math.min((time - lastTime) / 1000, .04);
+  const dt = Math.max(0, Math.min((time - lastTime) / 1000, .04));
   lastTime = time;
   currentGameFrameTime = time;
   updateGame(dt);
@@ -2190,6 +2211,22 @@ $$('[data-control="jump"]').forEach((button) => {
 });
 canvas.addEventListener('pointerdown', (event) => {
   event.preventDefault();
+  if (gameWon) {
+    const rect = canvas.getBoundingClientRect();
+    const point = {
+      x: (event.clientX - rect.left) * 960 / rect.width,
+      y: (event.clientY - rect.top) * 420 / rect.height
+    };
+    const button = VICTORY_LAYOUT.button;
+    const insideReplay = point.x >= button.x && point.x <= button.x + button.width && point.y >= button.y && point.y <= button.y + button.height;
+    if (insideReplay) {
+      resetGame();
+      gameActive = true;
+      gameStarted = true;
+      lastTime = performance.now();
+    }
+    return;
+  }
   requestGameFullscreenFromGesture();
   canvas.setPointerCapture?.(event.pointerId);
   if (player.power === 'flight') setFlightTargetFromPointer(event); else jumpPress();
@@ -2266,6 +2303,11 @@ window.__nickGameDebug = {
     musicEnabled,
     partyFlags: false,
     celebrationTitle: CELEBRATION_TITLE,
+    victoryLayout: {
+      ...VICTORY_LAYOUT,
+      bubble: { ...VICTORY_LAYOUT.bubble },
+      button: { ...VICTORY_LAYOUT.button }
+    },
     groundGap: Math.max(0, Math.round(((GROUND_Y + GROUND_SURFACE_OFFSET) - (GROUND_Y + CRAWL_VISUAL_BOTTOM_OFFSET)) * 10) / 10),
     platformDecorClipped: true,
     hitSlowdown: { duration: HIT_SLOWDOWN_DURATION, multiplier: HIT_SLOWDOWN_MULTIPLIER },
@@ -2385,7 +2427,7 @@ window.__nickGameDebug = {
   resetWithSeed: (seed) => { resetGame(seed); gameActive = true; gameStarted = true; $('#gameDialogue').hidden = true; },
   completeGame: (durationMs = 274200, score = 0) => {
     resetGame(); gameActive = true; gameStarted = true; $('#gameDialogue').hidden = true;
-    player.x = WORLD_WIDTH - 219; player.elapsedTime = durationMs / 1000; player.score = score; scoreLabel.textContent = String(score); timeLabel.textContent = formatGameTime(durationMs); gameWon = true; canvas.dataset.won = 'true'; canvas.dataset.elapsedMs = String(durationMs); handleGameCompletion();
+    player.x = WORLD_WIDTH - 219; player.elapsedTime = durationMs / 1000; player.score = score; scoreLabel.textContent = String(score); timeLabel.textContent = formatGameTime(durationMs); markGameWon(); canvas.dataset.elapsedMs = String(durationMs); handleGameCompletion();
   },
   activatePower,
   collectPickup,
