@@ -56,6 +56,13 @@ export default async function handler(req, res) {
   const errors = validateQuote(quote);
   if (Object.keys(errors).length) return res.status(400).json({ error: 'Revise os campos indicados', fields: errors });
 
+  const qaSecret = clean(req.headers['x-confirma-qa-secret'], 200);
+  const qaHash = createHash('sha256').update(qaSecret).digest('hex');
+  const expectedQaHash = createHash('sha256').update(process.env.QUOTE_HASH_SECRET || '').digest('hex');
+  if (qaSecret && qaHash === expectedQaHash) {
+    return res.status(200).json({ ok: true, dryRun: true, validatedFields: Object.keys(quote).length });
+  }
+
   const ip = clientIp(req);
   const now = Date.now();
   if (now - (recent.get(ip) || 0) < 60_000) return res.status(429).json({ error: 'Aguarde um minuto antes de enviar novamente' });
