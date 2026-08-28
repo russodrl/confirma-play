@@ -24,10 +24,10 @@ test('all quote CTAs point to the native form', () => {
 });
 
 test('has SEO and social metadata for the custom domain', () => {
-  assert.match(html, /<link rel="canonical" href="https:\/\/confirma-play\.com\/">/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/confirmaplay\.com\/">/);
   assert.match(html, /property="og:image"/);
   assert.match(html, /"@type": "FAQPage"/);
-  assert.match(robots, /https:\/\/confirma-play\.com\/sitemap\.xml/);
+  assert.match(robots, /https:\/\/confirmaplay\.com\/sitemap\.xml/);
 });
 
 test('has accessible navigation and FAQ controls', () => {

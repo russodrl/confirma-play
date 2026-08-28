@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://confirma-play.com/sitemap.xml
+Sitemap: https://confirmaplay.com/sitemap.xml

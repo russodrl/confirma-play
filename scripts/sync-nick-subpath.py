@@ -57,12 +57,12 @@ index = TARGET / "index.html"
 html = index.read_text(encoding="utf-8")
 html = html.replace(
     "<meta name=\"description\"",
-    f"<link rel=\"canonical\" href=\"https://confirma-play.com{PREFIX}/\">\n  <meta property=\"og:url\" content=\"https://confirma-play.com{PREFIX}/\">\n  <meta name=\"description\"",
+    f"<link rel=\"canonical\" href=\"https://confirmaplay.com{PREFIX}/\">\n  <meta property=\"og:url\" content=\"https://confirmaplay.com{PREFIX}/\">\n  <meta name=\"description\"",
     1,
 )
 html = html.replace(
     f'<meta property="og:image" content="{PREFIX}/assets/convite-nicolas.png">',
-    f'<meta property="og:image" content="https://confirma-play.com{PREFIX}/assets/convite-nicolas.png">',
+    f'<meta property="og:image" content="https://confirmaplay.com{PREFIX}/assets/convite-nicolas.png">',
 )
 index.write_text(html, encoding="utf-8")
 

@@ -24,7 +24,7 @@ async function walk(path) {
 test('Nick page uses the Confirma Play subpath for static resources', () => {
   assert.match(html, /href="\/nick-7meses\/styles\.css"/);
   assert.match(html, /src="\/nick-7meses\/app\.js"/);
-  assert.match(html, /https:\/\/confirma-play\.com\/nick-7meses\/assets\/convite-nicolas\.png/);
+  assert.match(html, /https:\/\/confirmaplay\.com\/nick-7meses\/assets\/convite-nicolas\.png/);
   assert.doesNotMatch(html, /(?:src|href)="\/(?:assets|styles\.css|app\.js|manifest\.webmanifest)/);
 });
 
