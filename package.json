@@ -1,0 +1,14 @@
+{
+  "name": "confirma-play",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 4174 --directory public",
+    "check": "node --check public/app.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}
