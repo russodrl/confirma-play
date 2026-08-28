@@ -2,20 +2,44 @@
 """Copy the Nick site into Confirma Play under /nick-7meses."""
 
 from pathlib import Path
+from io import BytesIO
 import shutil
+import subprocess
 import sys
+import tarfile
 
-SOURCE = Path(sys.argv[1] if len(sys.argv) > 1 else "/opt/data/projects/niver-nick/public")
+SOURCE_REPO = Path("/opt/data/projects/niver-nick")
+SOURCE = Path(sys.argv[1]) if len(sys.argv) > 1 else None
 TARGET = Path(__file__).resolve().parents[1] / "public" / "nick-7meses"
 PREFIX = "/nick-7meses"
 TEXT_EXTENSIONS = {".html", ".js", ".css", ".json", ".webmanifest", ".txt"}
 
-if not SOURCE.joinpath("index.html").exists():
-    raise SystemExit(f"Nick public directory not found: {SOURCE}")
-
 if TARGET.exists():
     shutil.rmtree(TARGET)
-shutil.copytree(SOURCE, TARGET)
+
+if SOURCE is not None:
+    if not SOURCE.joinpath("index.html").exists():
+        raise SystemExit(f"Nick public directory not found: {SOURCE}")
+    shutil.copytree(SOURCE, TARGET)
+    source_label = str(SOURCE)
+else:
+    archive = subprocess.run(
+        ["git", "archive", "HEAD:public"],
+        cwd=SOURCE_REPO,
+        capture_output=True,
+        check=True,
+    ).stdout
+    TARGET.mkdir(parents=True)
+    with tarfile.open(fileobj=BytesIO(archive), mode="r:") as bundle:
+        bundle.extractall(TARGET, filter="data")
+    commit = subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"],
+        cwd=SOURCE_REPO,
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout.strip()
+    source_label = f"{SOURCE_REPO}@{commit}:public"
 
 for path in TARGET.rglob("*"):
     if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
@@ -62,4 +86,4 @@ if service_worker.exists():
     )
     service_worker.write_text(text, encoding="utf-8")
 
-print(f"Synced Nick site: {SOURCE} -> {TARGET}")
+print(f"Synced Nick site: {source_label} -> {TARGET}")
