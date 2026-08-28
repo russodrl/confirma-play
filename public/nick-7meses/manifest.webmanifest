@@ -1,0 +1,14 @@
+{
+  "name": "Festinha do Nick, 7 meses",
+  "short_name": "Festa do Nick",
+  "description": "Convite, confirmação e lembretes da festa de 7 meses do Nick.",
+  "start_url": "/nick-7meses/#inicio",
+  "scope": "/nick-7meses/",
+  "display": "standalone",
+  "background_color": "#fff8e9",
+  "theme_color": "#1551a1",
+  "icons": [
+    { "src": "/nick-7meses/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/nick-7meses/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
