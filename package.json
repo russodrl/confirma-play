@@ -10,8 +10,5 @@
   },
   "devDependencies": {
     "playwright": "^1.62.1"
-  },
-  "dependencies": {
-    "@vercel/blob": "^2.8.0"
   }
 }
