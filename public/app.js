@@ -3,10 +3,29 @@ const menuButton = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.nav-links');
 const quoteForm = document.querySelector('#quoteForm');
 const quoteStatus = document.querySelector('#quoteStatus');
+const mobileCta = document.querySelector('.mobile-cta');
+const experienceSection = document.querySelector('#experiencia');
+const quoteSection = document.querySelector('#cotacao');
 
 const setHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 18);
-setHeader();
-window.addEventListener('scroll', setHeader, { passive: true });
+const setMobileCta = () => {
+  if (!mobileCta || !experienceSection || !quoteSection) return;
+  const isMobile = window.matchMedia('(max-width: 620px)').matches;
+  const reachedExperience = experienceSection.getBoundingClientRect().top <= window.innerHeight * .8;
+  const reachedQuote = quoteSection.getBoundingClientRect().top <= window.innerHeight * .8;
+  const visible = isMobile && reachedExperience && !reachedQuote;
+  mobileCta.classList.toggle('is-visible', visible);
+  mobileCta.setAttribute('aria-hidden', String(!visible));
+  mobileCta.tabIndex = visible ? 0 : -1;
+};
+
+const updateScrollState = () => {
+  setHeader();
+  setMobileCta();
+};
+updateScrollState();
+window.addEventListener('scroll', updateScrollState, { passive: true });
+window.addEventListener('resize', setMobileCta);
 
 menuButton?.addEventListener('click', () => {
   const open = nav?.classList.toggle('is-open');

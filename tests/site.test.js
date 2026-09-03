@@ -12,7 +12,15 @@ test('contains the core commercial promise and offer', () => {
   assert.match(html, /SLA de até 24 horas/i);
   assert.match(html, /confirmação de presença/i);
   assert.match(html, /jogo personalizado/i);
-  assert.match(html, /Quero entrar em cotação/i);
+  assert.match(html, /Quero pedir uma cotação/i);
+  assert.doesNotMatch(html, /Ver o que pode incluir/i);
+});
+
+test('keeps the mobile quote CTA hidden until the second section', () => {
+  assert.match(html, /class="button button-primary mobile-cta"[^>]+aria-hidden="true"[^>]+tabindex="-1"/);
+  assert.match(app, /reachedExperience/);
+  assert.match(app, /reachedQuote/);
+  assert.match(app, /mobileCta\.classList\.toggle\('is-visible', visible\)/);
 });
 
 test('presents personalized original music as a dedicated offer', () => {
