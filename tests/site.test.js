@@ -9,10 +9,18 @@ const robots = await readFile(new URL('../public/robots.txt', import.meta.url), 
 const occurrences = (value, source = html) => source.split(value).length - 1;
 
 test('contains the core commercial promise and offer', () => {
-  assert.match(html, /pronto em até 24 horas/i);
+  assert.match(html, /SLA de até 24 horas/i);
   assert.match(html, /confirmação de presença/i);
   assert.match(html, /jogo personalizado/i);
   assert.match(html, /Quero entrar em cotação/i);
+});
+
+test('presents personalized original music as a dedicated offer', () => {
+  assert.match(html, /id="musica"/);
+  assert.match(html, /Uma música feita sob medida para a sua história/i);
+  assert.match(html, /value="Música original personalizada"/);
+  assert.match(html, /áudio original, licenciado ou com autorização documentada/i);
+  assert.match(app, /data-feature-link/);
 });
 
 test('all quote CTAs point to the native form', () => {
@@ -33,6 +41,10 @@ test('has SEO and social metadata for the custom domain', () => {
 test('has accessible navigation and FAQ controls', () => {
   assert.match(html, /class="skip-link"/);
   assert.match(html, /aria-controls="mainNav"/);
-  assert.equal(occurrences('class="faq-item reveal"'), 6);
-  assert.equal(occurrences('aria-expanded="false"'), 7);
+  assert.equal(occurrences('class="faq-item reveal"'), 7);
+  assert.equal(occurrences('aria-expanded="false"'), 8);
+});
+
+test('does not use em dashes in client-facing copy', () => {
+  assert.doesNotMatch(html, /—/);
 });

@@ -36,3 +36,9 @@ test('drops unknown features and rejects an empty selection', () => {
   assert.deepEqual(quote.features, []);
   assert.equal(validateQuote(quote, new Date('2026-08-28T00:00:00Z')).features, 'Escolha pelo menos um recurso');
 });
+
+test('accepts personalized original music as a quote feature', () => {
+  const quote = sanitizeQuote({ ...valid, features: ['Música original personalizada'] });
+  assert.deepEqual(quote.features, ['Música original personalizada']);
+  assert.deepEqual(validateQuote(quote, new Date('2026-08-28T00:00:00Z')), {});
+});

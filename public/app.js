@@ -20,6 +20,14 @@ document.querySelectorAll('.nav-links a').forEach((link) => {
   });
 });
 
+document.querySelectorAll('[data-feature-link]').forEach((link) => {
+  link.addEventListener('click', () => {
+    const wanted = link.dataset.featureLink;
+    const feature = [...(quoteForm?.elements.features || [])].find((input) => input.value === wanted);
+    if (feature) feature.checked = true;
+  });
+});
+
 const revealItems = document.querySelectorAll('.reveal');
 if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const observer = new IntersectionObserver((entries) => {
