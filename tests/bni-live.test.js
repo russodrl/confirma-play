@@ -116,3 +116,13 @@ test('cache assíncrono permite publicar imediatamente um estado confirmado', as
   assert.deepEqual(await cached(), { slide: 12 });
   assert.equal(loads, 1);
 });
+
+test('uma leitura antiga não sobrescreve um estado novo confirmado pelo apresentador', async () => {
+  let resolveLoad;
+  const cached = createAsyncTtlCache(() => new Promise((resolve) => { resolveLoad = resolve; }), 1_000);
+  const pending = cached();
+  cached.set({ slide: 12 });
+  resolveLoad({ slide: 3 });
+  assert.deepEqual(await pending, { slide: 12 });
+  assert.deepEqual(await cached(), { slide: 12 });
+});
