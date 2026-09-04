@@ -9,9 +9,10 @@ page.on('pageerror', (error) => errors.push(`page:${error.message}`));
 page.on('console', (message) => { if (message.type() === 'error') errors.push(`console:${message.text()}`); });
 
 await page.goto(base, { waitUntil: 'networkidle' });
-assert.equal(await page.locator('#memberSelect option').count(), 28);
-await page.selectOption('#memberSelect', 'amilcar-cesar');
+assert.equal(await page.locator('#memberOptions option').count(), 27);
+await page.fill('#memberSelect', 'Amilcar Ceasar');
 assert.equal(await page.inputValue('#companyInput'), 'i9Cozinhas');
+await page.fill('#companyInput', 'i9 Cosinhas');
 await page.click('#joinButton');
 await page.waitForSelector('#experience:not([hidden])');
 assert.match(await page.locator('#participantBadge').innerText(), /Amílcar César/);

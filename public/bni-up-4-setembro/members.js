@@ -1562,10 +1562,65 @@ function normalize(value = '') {
     .replace(/\s+/g, ' ');
 }
 
+function editDistance(left, right) {
+  if (left === right) return 0;
+  if (!left.length) return right.length;
+  if (!right.length) return left.length;
+  let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let row = 1; row <= left.length; row += 1) {
+    const current = [row];
+    for (let column = 1; column <= right.length; column += 1) {
+      current[column] = Math.min(
+        current[column - 1] + 1,
+        previous[column] + 1,
+        previous[column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1)
+      );
+    }
+    previous = current;
+  }
+  return previous[right.length];
+}
+
+function similarity(left, right) {
+  const a = normalize(left);
+  const b = normalize(right);
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const shorter = Math.min(a.length, b.length);
+  const longer = Math.max(a.length, b.length);
+  if (shorter >= 6 && (a.includes(b) || b.includes(a))) return 0.9 + (0.1 * shorter / longer);
+  return 1 - (editDistance(a, b) / longer);
+}
+
+function uniqueBest(candidates, minimumScore, minimumMargin = 0.08) {
+  const ordered = [...candidates].sort((left, right) => right.score - left.score);
+  const best = ordered[0];
+  const runnerUp = ordered[1];
+  if (!best || best.score < minimumScore) return null;
+  if (runnerUp && best.score - runnerUp.score < minimumMargin) return null;
+  return best.member;
+}
+
 export function findMember(name, company) {
   const normalizedName = normalize(name);
   const normalizedCompany = normalize(company);
-  return members.find((member) => normalize(member.name) === normalizedName && normalize(member.company) === normalizedCompany) || null;
+  if (!normalizedName || !normalizedCompany) return null;
+  const exact = members.find((member) => normalize(member.name) === normalizedName && normalize(member.company) === normalizedCompany);
+  if (exact) return exact;
+  const candidates = members.map((member) => {
+    const nameScore = similarity(normalizedName, member.name);
+    const companyScore = similarity(normalizedCompany, member.company);
+    return { member, nameScore, companyScore, score: (nameScore * 0.6) + (companyScore * 0.4) };
+  }).filter((candidate) => candidate.nameScore >= 0.72 && candidate.companyScore >= 0.7);
+  return uniqueBest(candidates, 0.8);
+}
+
+export function findMemberByName(name) {
+  const normalizedName = normalize(name);
+  if (!normalizedName) return null;
+  const exact = members.find((member) => normalize(member.name) === normalizedName);
+  if (exact) return exact;
+  return uniqueBest(members.map((member) => ({ member, score: similarity(normalizedName, member.name) })), 0.82, 0.12);
 }
 
 export function publicMember(member) {

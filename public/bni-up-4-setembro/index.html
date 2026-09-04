@@ -23,11 +23,11 @@
     <p class="gate-copy">Escolha seu nome. A experiência será sincronizada com o Russo, mas uma parte será criada só para a sua empresa.</p>
     <form id="joinForm" class="join-card">
       <label for="memberSelect">Seu nome</label>
-      <select id="memberSelect" required>
-        <option value="">Selecione seu nome</option>
-      </select>
+      <input id="memberSelect" type="text" list="memberOptions" autocomplete="name" placeholder="Digite ou escolha seu nome" required>
+      <datalist id="memberOptions"></datalist>
       <label for="companyInput">Sua empresa</label>
-      <input id="companyInput" type="text" readonly placeholder="A empresa aparecerá aqui">
+      <input id="companyInput" type="text" list="companyOptions" autocomplete="organization" placeholder="Digite ou escolha sua empresa" required>
+      <datalist id="companyOptions"></datalist>
       <button id="joinButton" class="button button-primary" type="submit">Entrar na apresentação</button>
       <p id="joinError" class="form-error" role="alert" hidden></p>
     </form>
