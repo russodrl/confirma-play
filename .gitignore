@@ -5,6 +5,7 @@ node_modules/
 !.env.example
 playwright-report/
 test-results/
+.research/
 .DS_Store
 .vercel
 .env*

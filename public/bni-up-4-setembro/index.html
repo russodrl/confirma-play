@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#8f152c">
+  <meta name="description" content="Experiência interativa BNI UP, apresentação personalizada e Corrida das Referências.">
+  <meta property="og:title" content="BNI UP, a atenção virou experiência">
+  <meta property="og:description" content="Entre, acompanhe a apresentação no seu celular e dispute a Corrida das Referências.">
+  <title>BNI UP | A atenção virou experiência</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <section id="entryGate" class="gate-shell" aria-labelledby="entryTitle">
+    <div class="brand-lockup" aria-label="BNI UP">
+      <span class="brand-mark">BNI</span><span class="brand-up">UP</span>
+    </div>
+    <p class="eyebrow">4 de setembro · Sea Porto Hotel</p>
+    <h1 id="entryTitle">Esta apresentação conhece você.</h1>
+    <p class="gate-copy">Escolha seu nome. A experiência será sincronizada com o Russo, mas uma parte será criada só para a sua empresa.</p>
+    <form id="joinForm" class="join-card">
+      <label for="memberSelect">Seu nome</label>
+      <select id="memberSelect" required>
+        <option value="">Selecione seu nome</option>
+      </select>
+      <label for="companyInput">Sua empresa</label>
+      <input id="companyInput" type="text" readonly placeholder="A empresa aparecerá aqui">
+      <button id="joinButton" class="button button-primary" type="submit">Entrar na apresentação</button>
+      <p id="joinError" class="form-error" role="alert" hidden></p>
+    </form>
+    <p class="privacy-note">Usamos somente nome, empresa e informação empresarial pública. Telefones e e-mails não fazem parte desta experiência.</p>
+  </section>
+
+  <section id="presenterGate" class="gate-shell presenter-gate" hidden aria-labelledby="presenterTitle">
+    <div class="brand-lockup"><span class="brand-mark">BNI</span><span class="brand-up">UP</span></div>
+    <p class="eyebrow">Modo apresentador</p>
+    <h1 id="presenterTitle">Controle a sala pelo celular.</h1>
+    <form id="presenterLoginForm" class="join-card">
+      <label for="presenterPin">PIN do apresentador</label>
+      <input id="presenterPin" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="12" required>
+      <button id="presenterLoginButton" class="button button-primary" type="submit">Abrir controles</button>
+      <p id="presenterError" class="form-error" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <div id="experience" class="experience" hidden>
+    <header class="topbar">
+      <div class="brand-lockup brand-small"><span class="brand-mark">BNI</span><span class="brand-up">UP</span></div>
+      <div id="participantBadge" class="participant-badge"></div>
+      <div id="syncStatus" class="sync-status" data-state="connecting"><span></span> Sincronizando</div>
+    </header>
+
+    <main id="slideDeck" class="slide-deck" aria-live="polite">
+      <section class="slide slide-hero" data-slide="0">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow light">Digital Roots Lab apresenta</p>
+            <h2>A inteligência ficou abundante.</h2>
+            <p class="hero-accent">A atenção ficou rara.</p>
+            <p class="lead">Hoje o celular não é uma distração da apresentação. Ele é a apresentação.</p>
+          </div>
+          <div class="qr-card">
+            <img id="entryQr" alt="QR Code para entrar na apresentação" width="190" height="190">
+            <strong>Entre agora</strong>
+            <span>confirmaplay.com/bni-up-4-setembro</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="1" hidden>
+        <p class="eyebrow">Uma frase para levar daqui</p>
+        <blockquote>Produto ou serviço bom sem clientes é um segredo bem guardado.</blockquote>
+        <div class="split-stat">
+          <article><strong>Abundante</strong><span>inteligência, conteúdo, software</span></article>
+          <article><strong>Escasso</strong><span>tempo, confiança, atenção</span></article>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="2" hidden>
+        <p class="eyebrow">De uma festa para um produto</p>
+        <h2>Meu filho de 7 meses virou um SaaS.</h2>
+        <div class="journey">
+          <span>Convite</span><i>→</i><span>Site</span><i>→</i><span>Confirmação</span><i>→</i><span>Jogo</span><i>→</i><span>Produto em 24h</span>
+        </div>
+        <p class="lead dark">A IA não criou apenas uma imagem. Ela conectou design, desenvolvimento, dados, comunicação e operação.</p>
+        <a class="text-link" href="/nick-7meses/" target="_blank" rel="noopener">Ver o caso real do Nick</a>
+      </section>
+
+      <section class="slide slide-center" data-slide="3" hidden>
+        <p class="eyebrow">Até aqui</p>
+        <h2>Esta apresentação foi igual para todos.</h2>
+        <p class="lead dark">Agora olhe para o seu celular. A próxima tela é diferente da tela da pessoa ao lado.</p>
+        <div class="pulse-orbit" aria-hidden="true"><span>27</span><small>empresas</small></div>
+      </section>
+
+      <section id="personalizedSlide" class="slide slide-personalized" data-slide="4" hidden>
+        <p class="eyebrow">Esta parte é só sua</p>
+        <div id="personalizedContent"></div>
+      </section>
+
+      <section class="slide" data-slide="5" hidden>
+        <p class="eyebrow">O teste que fizemos antes da reunião</p>
+        <h2>Quando alguém pesquisa pelo serviço, sua empresa aparece?</h2>
+        <div class="big-result"><strong id="visibleBrandCount">1</strong><span>das 27 marcas apareceu entre os 10 primeiros resultados da busca genérica correspondente.</span></div>
+        <p class="method-note">Auditoria realizada em 04/09/2026 pela busca web do Hermes, sem conta ou histórico pessoal. Amostra: as 27 marcas do diretório BNI NL UP. Foi escolhida uma palavra-chave genérica por categoria, com localidade quando aplicável, e observados 10 resultados web. “Apareceu” significa nome da marca ou domínio oficial presente no título, descrição ou URL. O resultado pode variar por motor, localização e momento.</p>
+      </section>
+
+      <section class="slide slide-game" data-slide="6" hidden>
+        <div class="game-heading">
+          <div><p class="eyebrow">Desafio final</p><h2>Corrida das Referências</h2></div>
+          <p>Chegue ao pódio do BNI. Colete referências, evite indicações vagas e responda aos checkpoints.</p>
+        </div>
+        <div class="game-stage">
+          <canvas id="bniGame" width="960" height="480" data-distance="120" data-won="false" aria-label="Corrida das Referências"></canvas>
+          <div class="game-html-hud" aria-live="polite">
+            <strong id="gameHudScore">0 PTS</strong>
+            <span id="gameHudProgress">0 REF · 0/6</span>
+          </div>
+          <div id="gameLocked" class="game-lock">
+            <span class="lock-icon">⌛</span>
+            <strong>O desafio ainda está bloqueado.</strong>
+            <small>O Russo vai liberar o jogo no final da apresentação.</small>
+          </div>
+        </div>
+        <div class="game-actions">
+          <button id="startGameButton" class="button button-gold" type="button" hidden>Começar a corrida</button>
+          <button id="jumpButton" class="button button-jump" type="button" hidden>PULAR</button>
+        </div>
+        <p id="gameResult" class="game-result" hidden></p>
+      </section>
+
+      <section class="slide" data-slide="7" hidden>
+        <p class="eyebrow">Ao vivo até o fim da reunião</p>
+        <h2>Ranking BNI UP</h2>
+        <ol id="rankingList" class="ranking-list"><li class="ranking-empty">O pódio ainda está aberto.</li></ol>
+      </section>
+
+      <section class="slide slide-podium" data-slide="8" hidden>
+        <p class="eyebrow light">Chegamos ao pódio</p>
+        <h2>Quem reconhece a oportunidade certa, indica melhor.</h2>
+        <div id="podium" class="podium" aria-label="Pódio da Corrida das Referências">
+          <article class="place second"><span>2</span><strong>Em disputa</strong><small>0 pontos</small></article>
+          <article class="place first"><span>1</span><strong>Em disputa</strong><small>0 pontos</small></article>
+          <article class="place third"><span>3</span><strong>Em disputa</strong><small>0 pontos</small></article>
+        </div>
+        <p class="closing-line">Inteligência transforma trabalho. Atenção transforma negócio.</p>
+      </section>
+    </main>
+
+    <div id="presenterControls" class="presenter-controls" hidden>
+      <button id="previousSlideButton" type="button" aria-label="Slide anterior">‹</button>
+      <div class="slide-buttons" aria-label="Selecionar slide">
+        <button type="button" data-slide-button="0">1</button><button type="button" data-slide-button="1">2</button><button type="button" data-slide-button="2">3</button><button type="button" data-slide-button="3">4</button><button type="button" data-slide-button="4">5</button><button type="button" data-slide-button="5">6</button><button type="button" data-slide-button="6">7</button><button type="button" data-slide-button="7">8</button><button type="button" data-slide-button="8">9</button>
+      </div>
+      <button id="nextSlideButton" type="button" aria-label="Próximo slide">›</button>
+      <button id="releaseGameButton" class="control-primary" type="button">Liberar jogo</button>
+      <button id="resetLiveButton" class="control-danger" type="button">Reiniciar sala</button>
+    </div>
+  </div>
+
+  <dialog id="questionDialog" class="question-dialog">
+    <form method="dialog">
+      <p id="questionProgress" class="eyebrow">Checkpoint</p>
+      <h2 id="questionText"></h2>
+      <div id="questionOptions" class="question-options"></div>
+      <p id="questionFeedback" class="question-feedback" hidden></p>
+    </form>
+  </dialog>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
