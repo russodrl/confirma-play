@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
+import { members } from '../public/bni-up-4-setembro/members.js';
 
 const base = process.env.SITE_URL || 'http://127.0.0.1:4186/bni-up-4-setembro/?demo=1';
 const out = new URL('../.research/qa/', import.meta.url).pathname;
@@ -9,7 +10,9 @@ const browser = await chromium.launch({ headless: true });
 async function openParticipant(viewport, memberSlug = 'amilcar-cesar') {
   const page = await browser.newPage({ viewport, isMobile: viewport.width < 600, hasTouch: viewport.width < 600 });
   await page.goto(base, { waitUntil: 'networkidle' });
-  await page.selectOption('#memberSelect', memberSlug);
+  const member = members.find((entry) => entry.slug === memberSlug);
+  await page.fill('#memberSelect', member.name);
+  await page.fill('#companyInput', member.company);
   await page.click('#joinButton');
   await page.waitForSelector('#experience:not([hidden])');
   return page;

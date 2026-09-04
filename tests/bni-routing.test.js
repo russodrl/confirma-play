@@ -34,3 +34,11 @@ test('sincronização compartilha cache e nunca sobrepõe requisições', () => 
   assert.match(app, /setTimeout\(schedulePoll,/);
   assert.match(app, /pollInFlight/);
 });
+
+test('entrada permite digitar nome e empresa com sugestões', () => {
+  assert.match(html, /<input id="memberSelect"[^>]+list="memberOptions"/);
+  assert.match(html, /<datalist id="memberOptions"><\/datalist>/);
+  assert.match(html, /<input id="companyInput"[^>]+list="companyOptions"/);
+  assert.match(html, /<datalist id="companyOptions"><\/datalist>/);
+  assert.doesNotMatch(html, /<select id="memberSelect"/);
+});

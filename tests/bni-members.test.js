@@ -51,3 +51,16 @@ test('login encontra membros da base oficial por nome e empresa sem depender de 
   assert.equal(findMember('  FÁTIMA   OLIVEIRA ', '  FATYBRINDE ')?.slug, 'fatima-oliveira');
   assert.equal(findMember('Pessoa inexistente', 'Empresa inexistente'), null);
 });
+
+test('login tolera erros pequenos no nome e na empresa', () => {
+  assert.equal(findMember('Aleksander Palamarzuk', 'Digital Rots Lab')?.slug, 'aleksander-palamarczuk');
+  assert.equal(findMember('Fatima Oliviera', 'Fatybrnde')?.slug, 'fatima-oliveira');
+  assert.equal(findMember('Amilcar Ceasar', 'i9 Cosinhas')?.slug, 'amilcar-cesar');
+});
+
+test('login aceita empresa sem sufixo societário, mas rejeita dados vagos ou desconhecidos', () => {
+  assert.equal(findMember('Vitor Rocha', 'Vitor e Rui Construção Civil')?.slug, 'vitor-rocha');
+  assert.equal(findMember('Antonio', 'Construção'), null);
+  assert.equal(findMember('Pessoa inventada', 'Digital Roots Lab'), null);
+  assert.equal(findMember('', ''), null);
+});

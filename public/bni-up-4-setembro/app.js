@@ -1,4 +1,4 @@
-import { members } from './members.js';
+import { members, findMember, findMemberByName } from './members.js';
 import { BNIGame } from './game.js';
 
 const $ = (selector) => document.querySelector(selector);
@@ -66,18 +66,23 @@ function appendLink(container, label, url) {
 }
 
 function populateMembers() {
-  const fragment = document.createDocumentFragment();
+  const memberOptions = $('#memberOptions');
+  const companyOptions = $('#companyOptions');
   members.forEach((member) => {
-    const option = document.createElement('option');
-    option.value = member.slug;
-    option.textContent = `${member.name} · ${member.company}`;
-    fragment.append(option);
+    const nameOption = document.createElement('option');
+    nameOption.value = member.name;
+    nameOption.label = member.company;
+    memberOptions.append(nameOption);
+    const companyOption = document.createElement('option');
+    companyOption.value = member.company;
+    companyOption.label = member.name;
+    companyOptions.append(companyOption);
   });
-  memberSelect.append(fragment);
 }
 
-memberSelect.addEventListener('change', () => {
-  companyInput.value = memberBySlug(memberSelect.value)?.company || '';
+memberSelect.addEventListener('input', () => {
+  const member = findMemberByName(memberSelect.value);
+  if (member) companyInput.value = member.company;
 });
 
 function playerId() {
@@ -119,17 +124,22 @@ function showExperience(member) {
 joinForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   joinError.hidden = true;
-  const member = memberBySlug(memberSelect.value);
-  if (!member) return;
+  let member = findMember(memberSelect.value, companyInput.value);
+  if (!member) {
+    joinError.textContent = 'Não encontramos essa combinação. Confira seu nome e sua empresa ou escolha uma das sugestões.';
+    joinError.hidden = false;
+    return;
+  }
   $('#joinButton').disabled = true;
   try {
     if (DEMO) {
       participantToken = 'demo';
     } else {
-      const payload = await api({ action: 'register', name: member.name, company: member.company, playerId: playerId() });
+      const payload = await api({ action: 'register', name: memberSelect.value, company: companyInput.value, playerId: playerId() });
       participantToken = payload.token;
       localStorage.setItem('bniUpParticipantToken', participantToken);
       localStorage.setItem('bniUpMemberSlug', member.slug);
+      member = memberBySlug(payload.member.slug) || member;
     }
     showExperience(member);
   } catch (error) {
