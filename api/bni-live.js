@@ -141,7 +141,6 @@ const ensureStorageReady = createAsyncTtlCache(async () => {
 }, 10 * 60_000);
 const getCachedSnapshot = createAsyncTtlCache(async () => {
   const token = await getAccessToken();
-  await ensureStorageReady();
   return readSnapshot(token);
 }, 1_500, Date.now, 30_000);
 
@@ -195,6 +194,7 @@ export default async function handler(req, res) {
     if (!verifyPresenterPin(pin, process.env.BNI_PRESENTER_PIN)) return res.status(401).json({ error: 'PIN inválido' });
     if (!configured()) return res.status(503).json({ error: 'Armazenamento ainda não configurado' });
     try {
+      await ensureStorageReady();
       return res.status(200).json({ ok: true, ...(await getCachedSnapshot()) });
     } catch (error) {
       console.error('[bni-live] presenter-login', { message: error?.message });
