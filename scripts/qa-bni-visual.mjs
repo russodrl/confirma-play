@@ -19,18 +19,18 @@ async function openParticipant(viewport, memberSlug = 'amilcar-cesar') {
 }
 
 const mobile = await openParticipant({ width: 390, height: 844 });
-for (const slide of [0, 4, 5, 6, 8]) {
-  await mobile.evaluate((index) => window.__bniDebug.setState({ slide: index, phase: index === 4 ? 'personalized' : index === 6 ? 'game' : index === 8 ? 'podium' : 'presentation', gameOpen: index >= 6, version: index + 1 }), slide);
+for (const slide of [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16]) {
+  await mobile.evaluate((index) => window.__bniDebug.setState({ slide: index, phase: index === 12 ? 'personalized' : index === 14 ? 'game' : index === 16 ? 'podium' : 'presentation', gameOpen: index >= 14, version: index + 1 }), slide);
   await mobile.waitForTimeout(650);
   await mobile.screenshot({ path: `${out}/mobile-slide-${slide}.png`, fullPage: true });
 }
 
 const desktop = await openParticipant({ width: 1440, height: 900 }, 'aleksander-palamarczuk');
-for (const slide of [0, 4, 5, 6, 8]) {
-  await desktop.evaluate((index) => window.__bniDebug.setState({ slide: index, phase: index === 4 ? 'personalized' : index === 6 ? 'game' : index === 8 ? 'podium' : 'presentation', gameOpen: index >= 6, version: index + 1 }), slide);
+for (const slide of [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16]) {
+  await desktop.evaluate((index) => window.__bniDebug.setState({ slide: index, phase: index === 12 ? 'personalized' : index === 14 ? 'game' : index === 16 ? 'podium' : 'presentation', gameOpen: index >= 14, version: index + 1 }), slide);
   await desktop.waitForTimeout(650);
   await desktop.screenshot({ path: `${out}/desktop-slide-${slide}.png`, fullPage: false });
 }
 
-console.log(JSON.stringify({ out, screenshots: 10 }, null, 2));
+console.log(JSON.stringify({ out, screenshots: 28 }, null, 2));
 await browser.close();

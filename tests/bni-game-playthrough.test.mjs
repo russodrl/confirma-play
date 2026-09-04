@@ -10,10 +10,10 @@ await page.goto(base, { waitUntil: 'networkidle' });
 await page.fill('#memberSelect', 'Amílcar César');
 await page.fill('#companyInput', 'i9Cozinhas');
 await page.click('#joinButton');
-await page.evaluate(() => window.__bniDebug.setState({ slide: 6, phase: 'game', gameOpen: true, version: 20 }));
+await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game', gameOpen: true, version: 20 }));
 await page.click('#startGameButton');
 
-const correctAnswers = [1, 0, 0, 0, 1, 0];
+const correctAnswers = [1, 1, 1, 0, 1, 0];
 let answered = 0;
 const started = Date.now();
 while (Date.now() - started < 90_000) {

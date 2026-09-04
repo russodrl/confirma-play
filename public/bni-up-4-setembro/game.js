@@ -23,67 +23,59 @@ export function createGameState() {
   };
 }
 
-function memberOption(member) {
-  return `${member.name}, ${member.company}`;
-}
-
 export function buildGameQuestions(member, allMembers) {
-  const bySlug = (slug) => allMembers.find((item) => item.slug === slug);
-  const visible = member.discoverability.position !== null;
-  const sitePublished = Boolean(member.presence.website);
-  const scenarios = [
-    {
-      prompt: 'Um restaurante quer um catering saudável para um evento empresarial. Quem deve receber a referência?',
-      options: [bySlug('rui-andrade'), bySlug('daniel-cardoso'), bySlug('fatima-oliveira')],
-      correct: 0,
-      explanation: 'Rui Andrade representa a Fresca Inspiração na categoria de catering.'
-    },
-    {
-      prompt: 'Uma PME procura implementar um ERP PHC. Quem pode ajudar?',
-      options: [bySlug('joao-alves'), bySlug('francisco-baptista'), bySlug('miguel-beirao')],
-      correct: 0,
-      explanation: 'João Alves representa a Discurso Virtual na categoria de software ERP.'
-    },
-    {
-      prompt: 'Uma empresa precisa de brindes e merchandising personalizados. Quem é a referência do grupo?',
-      options: [bySlug('fatima-oliveira'), bySlug('luis-silva'), bySlug('luis-maciel')],
-      correct: 0,
-      explanation: 'Fátima Oliveira representa a Fatybrinde em merchandising personalizado.'
-    }
-  ];
-  const selected = scenarios.map((question) => ({
-    ...question,
-    options: question.options.map(memberOption)
-  }));
+  void member;
+  void allMembers;
   return [
     {
-      personalized: true,
-      prompt: `Na pesquisa por “${member.discoverability.keyword}”, a ${member.company} apareceu entre os 10 resultados analisados?`,
-      options: ['Sim', 'Não', 'A auditoria não pesquisou esse termo'],
-      correct: visible ? 0 : 1,
+      personalized: false,
+      prompt: 'Qual situação é uma boa indicação para o Russo?',
+      options: ['Uma empresa que só quer imprimir cartões', 'Um empresário que precisa de mais clientes, mas não sabe se o problema é lead, processo ou tecnologia', 'Uma pessoa procurando um fotógrafo de casamento'],
+      correct: 1,
       power: 'boost',
-      explanation: member.discoverability.note
+      explanation: 'O Russo diagnostica onde a jornada está falhando e conecta marketing, processo e tecnologia.'
     },
-    selected[0] && { ...selected[0], personalized: false, power: 'shield' },
-    {
-      personalized: true,
-      prompt: `O perfil oficial da ${member.company} publica um website empresarial próprio?`,
-      options: ['Sim', 'Não', 'Apenas um telefone'],
-      correct: sitePublished ? 0 : 1,
-      power: 'double',
-      explanation: member.websiteAudit.note
-    },
-    selected[1] && { ...selected[1], personalized: false, power: 'boost' },
     {
       personalized: false,
-      prompt: 'Qual pedido gera uma referência BNI mais fácil de reconhecer?',
-      options: ['Qualquer pessoa que precise de mim', 'Responsáveis de compras de hotéis no Grande Porto', 'Alguém que queira crescer'],
+      prompt: 'Qual é o melhor primeiro passo para usar IA numa empresa?',
+      options: ['Comprar várias ferramentas e depois procurar onde usar', 'Escolher um problema repetitivo, mapear o processo e definir o resultado esperado', 'Substituir toda a equipe de uma vez'],
       correct: 1,
       power: 'shield',
-      explanation: 'Quanto mais específico for o pedido, mais fácil será lembrar da pessoa certa.'
+      explanation: 'A IA gera valor quando entra num processo claro, com dados, regra e objetivo.'
     },
-    selected[2] && { ...selected[2], personalized: false, power: 'double' }
-  ].filter(Boolean);
+    {
+      personalized: false,
+      prompt: 'Qual é o verdadeiro poder do marketing digital?',
+      options: ['Publicar todos os dias, mesmo sem objetivo', 'Atrair a pessoa certa, conduzir a próxima ação e medir o caminho até a venda', 'Tentar viralizar qualquer conteúdo'],
+      correct: 1,
+      power: 'double',
+      explanation: 'Marketing digital cria uma jornada mensurável, não apenas presença nas redes.'
+    },
+    {
+      personalized: false,
+      prompt: 'O que acontece quando IA e marketing digital trabalham juntos?',
+      options: ['O marketing atrai e captura intenção, enquanto a IA analisa, qualifica, personaliza e acelera o follow-up', 'A empresa deixa de precisar de estratégia', 'Todos os anúncios passam a funcionar automaticamente'],
+      correct: 0,
+      power: 'boost',
+      explanation: 'A combinação transforma ações isoladas num sistema comercial que aprende e melhora.'
+    },
+    {
+      personalized: false,
+      prompt: 'Qual ferramenta conecta CRM, e-mail, WhatsApp e Google Sheets em automações visuais?',
+      options: ['Pipedrive', 'Make', 'NotebookLM'],
+      correct: 1,
+      power: 'shield',
+      explanation: 'O Make conecta aplicativos e executa fluxos automáticos. O Pipedrive organiza o funil comercial.'
+    },
+    {
+      personalized: false,
+      prompt: 'Em qual situação você deve indicar o Russo?',
+      options: ['A empresa recebe leads, responde tarde, não usa CRM e esquece follow-ups', 'A empresa precisa trocar uma janela', 'A pessoa procura seguro automóvel'],
+      correct: 0,
+      power: 'double',
+      explanation: 'Quando há interesse, mas o processo comercial perde oportunidades, o Russo pode organizar CRM, automação e acompanhamento.'
+    }
+  ];
 }
 
 export function answerCheckpoint(state, question, selectedIndex) {

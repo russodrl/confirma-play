@@ -17,15 +17,15 @@ await page.click('#joinButton');
 await page.waitForSelector('#experience:not([hidden])');
 assert.match(await page.locator('#participantBadge').innerText(), /Amílcar César/);
 
-await page.evaluate(() => window.__bniDebug.setState({ slide: 4, phase: 'personalized', gameOpen: false, version: 10 }));
+await page.evaluate(() => window.__bniDebug.setState({ slide: 12, phase: 'personalized', gameOpen: false, version: 10 }));
 await page.waitForTimeout(100);
 assert.match(await page.locator('#personalizedSlide').innerText(), /i9Cozinhas/);
 assert.match(await page.locator('#personalizedSlide').innerText(), /cozinhas por medida/i);
 assert.match(await page.locator('#personalizedSlide').innerText(), /10 resultados/i);
 
-await page.evaluate(() => window.__bniDebug.setState({ slide: 6, phase: 'game', gameOpen: false, version: 11 }));
+await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game', gameOpen: false, version: 11 }));
 assert.equal(await page.locator('#gameLocked').isVisible(), true);
-await page.evaluate(() => window.__bniDebug.setState({ slide: 6, phase: 'game', gameOpen: true, version: 12 }));
+await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game', gameOpen: true, version: 12 }));
 assert.equal(await page.locator('#startGameButton').isVisible(), true);
 await page.click('#startGameButton');
 await page.waitForTimeout(600);
@@ -42,7 +42,7 @@ await presenter.goto(`${base}&presenter=1`, { waitUntil: 'networkidle' });
 await presenter.fill('#presenterPin', '482731');
 await presenter.click('#presenterLoginButton');
 assert.equal(await presenter.locator('#presenterControls').isVisible(), true);
-assert.equal(await presenter.locator('[data-slide-button]').count(), 9);
+assert.equal(await presenter.locator('[data-slide-button]').count(), 17);
 assert.equal(await presenter.locator('#releaseGameButton').count(), 1);
 
 console.log(JSON.stringify({ members: 27, participant: 'amilcar-cesar', distance, presenterControls: true, overflow: dimensions.scrollWidth - dimensions.innerWidth, errors }, null, 2));
