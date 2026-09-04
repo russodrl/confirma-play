@@ -1,0 +1,33 @@
+import { chromium } from 'playwright';
+import { mkdir } from 'node:fs/promises';
+
+const base = process.env.SITE_URL || 'http://127.0.0.1:4186/bni-up-4-setembro/?demo=1';
+const out = new URL('../.research/qa/', import.meta.url).pathname;
+await mkdir(out, { recursive: true });
+const browser = await chromium.launch({ headless: true });
+
+async function openParticipant(viewport, memberSlug = 'amilcar-cesar') {
+  const page = await browser.newPage({ viewport, isMobile: viewport.width < 600, hasTouch: viewport.width < 600 });
+  await page.goto(base, { waitUntil: 'networkidle' });
+  await page.selectOption('#memberSelect', memberSlug);
+  await page.click('#joinButton');
+  await page.waitForSelector('#experience:not([hidden])');
+  return page;
+}
+
+const mobile = await openParticipant({ width: 390, height: 844 });
+for (const slide of [0, 4, 5, 6, 8]) {
+  await mobile.evaluate((index) => window.__bniDebug.setState({ slide: index, phase: index === 4 ? 'personalized' : index === 6 ? 'game' : index === 8 ? 'podium' : 'presentation', gameOpen: index >= 6, version: index + 1 }), slide);
+  await mobile.waitForTimeout(650);
+  await mobile.screenshot({ path: `${out}/mobile-slide-${slide}.png`, fullPage: true });
+}
+
+const desktop = await openParticipant({ width: 1440, height: 900 }, 'aleksander-palamarczuk');
+for (const slide of [0, 4, 5, 6, 8]) {
+  await desktop.evaluate((index) => window.__bniDebug.setState({ slide: index, phase: index === 4 ? 'personalized' : index === 6 ? 'game' : index === 8 ? 'podium' : 'presentation', gameOpen: index >= 6, version: index + 1 }), slide);
+  await desktop.waitForTimeout(650);
+  await desktop.screenshot({ path: `${out}/desktop-slide-${slide}.png`, fullPage: false });
+}
+
+console.log(JSON.stringify({ out, screenshots: 10 }, null, 2));
+await browser.close();
