@@ -36,6 +36,7 @@ test('sincronização compartilha cache e nunca sobrepõe requisições', () => 
   assert.doesNotMatch(app, /setInterval\(pollOnce/);
   assert.match(app, /setTimeout\(schedulePoll,/);
   assert.match(app, /pollInFlight/);
+  assert.match(app, /SYNC_FAILURE_THRESHOLD = 6/);
 });
 
 test('API agrupa leituras simultâneas e evita consultar metadados a cada celular', () => {
