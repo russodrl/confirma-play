@@ -224,13 +224,18 @@
           <div class="game-html-hud" aria-live="polite">
             <strong id="gameHudScore">0 PTS</strong>
             <span id="gameHudProgress">0 REF · 0/6</span>
+            <span id="gameHudLives">❤️❤️❤️</span>
           </div>
           <div id="gameLocked" class="game-lock">
             <span class="lock-icon">⌛</span>
             <strong>O desafio ainda está bloqueado.</strong>
             <small>O Russo vai liberar o jogo no final da apresentação.</small>
-          </div>
-        </div>
+            </div>
+            <div id="gameOverPanel" class="game-over-panel" hidden>
+            <strong>Você perdeu as 3 vidas.</strong>
+            <small>Tente outra vez e pule as indicações vagas.</small>
+            </div>
+            </div>
         <div class="game-actions">
           <button id="startGameButton" class="button button-gold" type="button" hidden>Começar a corrida</button>
           <button id="jumpButton" class="button button-jump" type="button" hidden>PULAR</button>

@@ -23,6 +23,7 @@ const questionDialog = $('#questionDialog');
 const startGameButton = $('#startGameButton');
 const jumpButton = $('#jumpButton');
 const gameLocked = $('#gameLocked');
+const gameOverPanel = $('#gameOverPanel');
 const gameResult = $('#gameResult');
 const canvas = $('#bniGame');
 
@@ -207,21 +208,32 @@ function renderPersonalized(member) {
 
 function initializeGame(member) {
   if (game) return;
-  const face = new Image();
-  face.src = '/bni-up-4-setembro/assets/russo-reference.webp';
+  const runner = new Image();
+  runner.src = '/bni-up-4-setembro/assets/russo-runner-detailed.webp';
   game = new BNIGame({
     canvas,
     member,
     members,
-    faceImage: face,
+    runnerImage: runner,
     onQuestion: handleQuestion,
-    onFinish: finishGame
+    onFinish: finishGame,
+    onGameOver: handleGameOver
   });
   canvas.addEventListener('bni-game-state', (event) => {
     $('#gameHudScore').textContent = `${event.detail.score} PTS`;
     $('#gameHudProgress').textContent = `${event.detail.referrals} REF · ${event.detail.correctAnswers}/6`;
+    $('#gameHudLives').textContent = event.detail.lives > 0 ? '❤️'.repeat(event.detail.lives) : 'SEM VIDAS';
   });
   canvas.addEventListener('pointerdown', () => game.jump());
+}
+
+function handleGameOver() {
+  gameStarted = false;
+  jumpButton.hidden = true;
+  startGameButton.hidden = false;
+  startGameButton.textContent = 'Tentar de novo';
+  gameOverPanel.hidden = false;
+  gameResult.hidden = true;
 }
 
 function handleQuestion(event) {
@@ -271,6 +283,7 @@ startGameButton.addEventListener('click', () => {
   gameStarted = true;
   startGameButton.hidden = true;
   jumpButton.hidden = false;
+  gameOverPanel.hidden = true;
   gameResult.hidden = true;
   game.start();
 });
@@ -304,7 +317,10 @@ function applyState(next) {
   $$('[data-slide-button]').forEach((button) => button.setAttribute('aria-current', String(Number(button.dataset.slideButton) === state.slide)));
   gameLocked.hidden = state.gameOpen;
   if (!gameStarted) startGameButton.hidden = !state.gameOpen;
-  if (!state.gameOpen) jumpButton.hidden = true;
+  if (!state.gameOpen) {
+    jumpButton.hidden = true;
+    gameOverPanel.hidden = true;
+  }
 }
 
 async function pollOnce() {

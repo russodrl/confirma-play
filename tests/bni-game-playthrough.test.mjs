@@ -14,6 +14,8 @@ await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game',
 await page.click('#startGameButton');
 
 const correctAnswers = [1, 1, 1, 0, 1, 0];
+const obstacles = [1_050, 2_500, 4_150, 5_950, 7_650, 9_400, 11_050];
+const jumped = new Set();
 let answered = 0;
 const started = Date.now();
 while (Date.now() - started < 90_000) {
@@ -25,8 +27,13 @@ while (Date.now() - started < 90_000) {
     answered += 1;
     await page.waitForTimeout(900);
   } else {
-    await page.evaluate(() => document.querySelector('#bniGame').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })));
-    await page.waitForTimeout(500);
+    const distance = Number(await page.locator('#bniGame').getAttribute('data-distance'));
+    const obstacle = obstacles.find((position) => !jumped.has(position) && distance >= position - 55 && distance < position + 5);
+    if (obstacle) {
+      jumped.add(obstacle);
+      await page.evaluate(() => document.querySelector('#bniGame').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })));
+    }
+    await page.waitForTimeout(120);
   }
 }
 
