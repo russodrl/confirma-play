@@ -28,12 +28,12 @@ while (Date.now() - started < 90_000) {
     await page.waitForTimeout(900);
   } else {
     const distance = Number(await page.locator('#bniGame').getAttribute('data-distance'));
-    const obstacle = obstacles.find((position) => !jumped.has(position) && distance >= position - 55 && distance < position + 5);
+    const obstacle = obstacles.find((position) => !jumped.has(position) && distance >= position - 58 && distance < position - 20);
     if (obstacle) {
       jumped.add(obstacle);
       await page.evaluate(() => document.querySelector('#bniGame').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })));
     }
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(35);
   }
 }
 
