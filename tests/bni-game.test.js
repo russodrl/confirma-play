@@ -12,8 +12,8 @@ test('jogo cria seis checkpoints sobre indicação ao Russo, IA e marketing digi
   assert.match(content, /inteligência artificial|\bIA\b/i);
   assert.match(content, /marketing digital/i);
   assert.match(content, /indicar|indicação/i);
-  assert.match(content, /Pipedrive/);
   assert.match(content, /Make/);
+  assert.doesNotMatch(content, /\bCRM\b|Pipedrive/i);
   assert.doesNotMatch(content, /Digital Roots Lab/i);
   for (const question of questions) {
     assert.equal(question.personalized, false);

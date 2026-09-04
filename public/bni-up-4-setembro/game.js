@@ -63,19 +63,19 @@ export function buildGameQuestions(member, allMembers) {
     },
     {
       personalized: false,
-      prompt: 'Qual ferramenta conecta CRM, e-mail, WhatsApp e Google Sheets em automações visuais?',
-      options: ['Pipedrive', 'Make', 'NotebookLM'],
+      prompt: 'Qual ferramenta conecta e-mail, WhatsApp e Google Sheets em automações visuais?',
+      options: ['Meta Ads Library', 'Make', 'NotebookLM'],
       correct: 1,
       power: 'shield',
-      explanation: 'O Make conecta aplicativos e executa fluxos automáticos. O Pipedrive organiza o funil comercial.'
+      explanation: 'O Make conecta aplicativos e executa fluxos automáticos entre ferramentas do dia a dia.'
     },
     {
       personalized: false,
       prompt: 'Em qual situação você deve indicar o Russo?',
-      options: ['A empresa recebe leads, responde tarde, não usa CRM e esquece follow-ups', 'A empresa precisa trocar uma janela', 'A pessoa procura seguro automóvel'],
+      options: ['A empresa recebe leads, responde tarde e esquece follow-ups', 'A empresa precisa trocar uma janela', 'A pessoa procura seguro automóvel'],
       correct: 0,
       power: 'double',
-      explanation: 'Quando há interesse, mas o processo comercial perde oportunidades, o Russo pode organizar CRM, automação e acompanhamento.'
+      explanation: 'Quando há interesse, mas o processo comercial perde oportunidades, o Russo pode organizar automação e acompanhamento.'
     }
   ];
 }

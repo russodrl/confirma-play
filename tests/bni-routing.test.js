@@ -74,3 +74,8 @@ test('jogo mostra três vidas, game over e usa o novo boneco detalhado', () => {
   assert.equal(detailedRunner.subarray(0, 4).toString('ascii'), 'RIFF');
   assert.equal(detailedRunner.subarray(8, 12).toString('ascii'), 'WEBP');
 });
+
+test('apresentação e perguntas não mencionam CRM nem Pipedrive', () => {
+  assert.doesNotMatch(html, /\bCRM\b|Pipedrive/i);
+  assert.doesNotMatch(game, /\bCRM\b|Pipedrive/i);
+});
