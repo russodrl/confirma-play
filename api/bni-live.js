@@ -143,7 +143,7 @@ const getCachedSnapshot = createAsyncTtlCache(async () => {
   const token = await getAccessToken();
   await ensureStorageReady();
   return readSnapshot(token);
-}, 900);
+}, 1_500, Date.now, 30_000);
 
 function bodyOf(req) {
   if (typeof req.body === 'string') {
@@ -167,7 +167,7 @@ export default async function handler(req, res) {
     }
     try {
       const snapshot = await getCachedSnapshot();
-      res.setHeader('Cache-Control', 'public, s-maxage=2, stale-while-revalidate=5');
+      res.setHeader('Cache-Control', 'public, s-maxage=1, stale-while-revalidate=2');
       return res.status(200).json({ ok: true, live: true, ...snapshot });
     } catch (error) {
       console.error('[bni-live] snapshot', { message: error?.message });
@@ -199,13 +199,13 @@ export default async function handler(req, res) {
       await ensureStorageReady();
       if (body.action === 'reset') {
         await resetLive(token);
-        getCachedSnapshot.clear();
+        getCachedSnapshot.set({ state: { ...DEFAULT_STATE }, ranking: [] });
         return res.status(200).json({ ok: true, state: { ...DEFAULT_STATE } });
       }
       const snapshot = await readSnapshot(token);
       const state = normalizeState(body, snapshot.state);
       await writeState(token, state);
-      getCachedSnapshot.clear();
+      getCachedSnapshot.set({ state, ranking: snapshot.ranking });
       return res.status(200).json({ ok: true, state });
     } catch (error) {
       console.error('[bni-live] presenter', { message: error?.message });
@@ -231,7 +231,7 @@ export default async function handler(req, res) {
       if (!snapshot.state.gameOpen) return res.status(403).json({ error: 'O jogo ainda não foi liberado pelo apresentador' });
       const entry = { ...normalized, playerId: session.playerId, memberSlug: member.slug, name: member.name, company: member.company, createdAt: new Date().toISOString() };
       await appendScore(token, entry);
-      getCachedSnapshot.clear();
+      getCachedSnapshot.set({ state: snapshot.state, ranking: rankScores([...snapshot.ranking, entry]) });
       recentScores.set(session.playerId, now);
       return res.status(201).json({ ok: true, entry });
     } catch (error) {

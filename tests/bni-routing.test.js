@@ -42,7 +42,8 @@ test('API agrupa leituras simultâneas e evita consultar metadados a cada celula
   assert.match(liveApi, /createAsyncTtlCache/);
   assert.match(liveApi, /getCachedSnapshot/);
   assert.match(liveApi, /ensureStorageReady/);
-  assert.match(liveApi, /s-maxage=2/);
+  assert.match(liveApi, /s-maxage=1/);
+  assert.match(liveApi, /getCachedSnapshot\.set/);
   const getBranch = liveApi.slice(liveApi.indexOf("if (req.method === 'GET')"), liveApi.indexOf("if (req.method !== 'POST')"));
   assert.doesNotMatch(getBranch, /ensureTabs\(/);
   assert.doesNotMatch(getBranch, /readSnapshot\(/);

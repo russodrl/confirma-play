@@ -91,3 +91,28 @@ test('cache assíncrono agrupa consultas simultâneas e respeita expiração e l
   cached.clear();
   assert.equal((await cached()).calls, 3);
 });
+
+test('cache assíncrono conserva o último estado durante uma falha transitória', async () => {
+  let now = 10_000;
+  let fail = false;
+  const cached = createAsyncTtlCache(async () => {
+    if (fail) throw new Error('planilha temporariamente indisponível');
+    return { slide: 8 };
+  }, 1_000, () => now, 30_000);
+
+  assert.deepEqual(await cached(), { slide: 8 });
+  now = 11_001;
+  fail = true;
+  assert.deepEqual(await cached(), { slide: 8 });
+  now = 41_001;
+  await assert.rejects(cached(), /temporariamente indisponível/);
+});
+
+test('cache assíncrono permite publicar imediatamente um estado confirmado', async () => {
+  let loads = 0;
+  const cached = createAsyncTtlCache(async () => ({ slide: ++loads }), 1_000);
+  assert.deepEqual(await cached(), { slide: 1 });
+  cached.set({ slide: 12 });
+  assert.deepEqual(await cached(), { slide: 12 });
+  assert.equal(loads, 1);
+});

@@ -92,7 +92,7 @@ test('trinta celulares simultâneos compartilham token, preparação e leitura d
     const responses = Array.from({ length: 30 }, responseHarness);
     await Promise.all(responses.map((res) => handler({ method: 'GET', headers: {}, query: {} }, res)));
     assert.ok(responses.every((res) => res.statusCode === 200 && res.payload.state.slide === 3));
-    assert.ok(responses.every((res) => res.headers['cache-control'] === 'public, s-maxage=2, stale-while-revalidate=5'));
+    assert.ok(responses.every((res) => res.headers['cache-control'] === 'public, s-maxage=1, stale-while-revalidate=2'));
     assert.equal(calls.filter((url) => url.includes('oauth2.googleapis.com')).length, 1);
     assert.equal(calls.filter((url) => url.includes('fields=sheets.properties.title')).length, 1);
     assert.equal(calls.filter((url) => url.includes('values:batchGet')).length, 1);
