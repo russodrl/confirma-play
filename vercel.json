@@ -3,6 +3,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/bni-up-4-setembro",
+      "destination": "/bni-up-4-setembro/index.html"
+    },
+    {
       "source": "/nick-7meses/api/:path*",
       "destination": "https://niver-nick.vercel.app/api/:path*"
     }
