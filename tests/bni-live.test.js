@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   DEFAULT_STATE,
   normalizeState,
+  migrateLegacyState,
   verifyPresenterPin,
   issueParticipantToken,
   verifyParticipantToken,
@@ -27,9 +28,14 @@ test('estado aceita somente slides e fases conhecidas', () => {
   assert.equal(next.gameOpen, false);
   assert.equal(next.version, 1);
   assert.equal(next.updatedAt, '2026-09-04T07:30:00.000Z');
-  assert.equal(normalizeState({ slide: 16, phase: 'podium' }, next).slide, 16);
-  assert.throws(() => normalizeState({ slide: 17, phase: 'podium' }, next));
+  assert.equal(normalizeState({ slide: 15, phase: 'game' }, next).slide, 15);
+  assert.throws(() => normalizeState({ slide: 16, phase: 'podium' }, next));
   assert.throws(() => normalizeState({ slide: 999, phase: 'hack' }, DEFAULT_STATE));
+});
+
+test('estado legado do pódio migra para o ranking', () => {
+  assert.deepEqual(migrateLegacyState({ slide: 16, phase: 'podium', gameOpen: true }), { slide: 15, phase: 'game', gameOpen: true });
+  assert.deepEqual(migrateLegacyState({ slide: 12, phase: 'personalized', gameOpen: false }), { slide: 12, phase: 'personalized', gameOpen: false });
 });
 
 test('PIN do apresentador usa comparação por hash', () => {

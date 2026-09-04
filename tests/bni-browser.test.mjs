@@ -40,7 +40,7 @@ await presenter.goto(`${base}&presenter=1`, { waitUntil: 'networkidle' });
 await presenter.fill('#presenterPin', '482731');
 await presenter.click('#presenterLoginButton');
 assert.equal(await presenter.locator('#presenterControls').isVisible(), true);
-assert.equal(await presenter.locator('[data-slide-button]').count(), 17);
+assert.equal(await presenter.locator('[data-slide-button]').count(), 16);
 assert.equal(await presenter.locator('#releaseGameButton').count(), 1);
 
 const visitor = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
@@ -52,6 +52,26 @@ assert.match(await visitor.locator('#participantBadge').innerText(), /Visitante/
 await visitor.evaluate(() => window.__bniDebug.setState({ slide: 12, phase: 'personalized', gameOpen: false, version: 30 }));
 assert.match(await visitor.locator('#personalizedSlide').innerText(), /Empresa sorteada para o visitante/i);
 assert.ok((await visitor.locator('#participantBadge small').innerText()).length > 2);
+
+const free = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+await free.goto(`${base}&livre=1`, { waitUntil: 'networkidle' });
+await free.fill('#memberSelect', 'Amílcar César');
+await free.click('#joinButton');
+await free.waitForSelector('#freeControls:not([hidden])');
+for (let index = 0; index < 12; index += 1) await free.click('#freeNextButton');
+assert.equal(await free.locator('#personalizedSlide').isVisible(), true);
+assert.match(await free.locator('#personalizedSlide').innerText(), /Relatório personalizado/i);
+assert.match(await free.locator('#personalizedSlide').innerText(), /i9Cozinhas/);
+await free.click('#freeNextButton');
+assert.match(await free.locator('[data-slide="13"]').innerText(), /Resumo da auditoria/i);
+await free.click('#freeNextButton');
+assert.match(await free.locator('[data-slide="14"]').innerText(), /Jogo interativo/i);
+assert.equal(await free.locator('#gameLocked').isHidden(), true);
+assert.equal(await free.locator('#startGameButton').isVisible(), true);
+await free.click('#freeNextButton');
+assert.match(await free.locator('[data-slide="15"]').innerText(), /Ranking/i);
+assert.equal(await free.locator('[data-slide="16"]').count(), 0);
+assert.equal(await free.locator('#freeNextButton').isDisabled(), true);
 
 console.log(JSON.stringify({ members: 27, participant: 'amilcar-cesar', distance, presenterControls: true, overflow: dimensions.scrollWidth - dimensions.innerWidth, errors }, null, 2));
 await browser.close();

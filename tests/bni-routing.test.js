@@ -55,7 +55,7 @@ test('slide personalizado mostra todas as palavras-chave validadas do membro', (
 });
 
 test('apresentação ensina IA, marketing, uso conjunto, ferramentas e serviços antes da personalização', () => {
-  assert.equal((html.match(/data-slide="\d+"/g) || []).length, 17);
+  assert.equal((html.match(/data-slide="\d+"/g) || []).length, 16);
   assert.match(html, /O poder da inteligência artificial/);
   assert.match(html, /O poder do marketing digital/);
   assert.match(html, /Quando IA e marketing trabalham juntos/);
@@ -64,13 +64,26 @@ test('apresentação ensina IA, marketing, uso conjunto, ferramentas e serviços
   assert.match(html, /O que o Russo faz pelos clientes/);
   assert.match(html, /Quando indicar o Russo/);
   assert.match(html, /id="personalizedSlide"[^>]+data-slide="12"/);
-  assert.equal((html.match(/data-slide-button="\d+"/g) || []).length, 17);
+  assert.equal((html.match(/data-slide-button="\d+"/g) || []).length, 16);
 });
 
-test('controle e liberação do jogo usam a nova sequência de dezessete slides', () => {
+test('controle e liberação do jogo usam a sequência de dezesseis slides', () => {
   assert.match(app, /const phaseBySlide = \[[^\]]+\]/);
-  assert.match(app, /Math\.min\(16, state\.slide \+ 1\)/);
+  assert.match(app, /Math\.min\(15, state\.slide \+ 1\)/);
   assert.match(app, /submitState\(\{ slide: 14, phase: 'game', gameOpen: true \}\)/);
+  assert.doesNotMatch(html, /data-slide="16"/);
+  assert.doesNotMatch(html, /id="podium"/);
+});
+
+test('modo livre libera navegação, relatório, jogo e ranking', () => {
+  assert.match(app, /params\.get\('livre'\) === '1'/);
+  assert.match(html, /id="freeControls"/);
+  assert.match(html, /id="freePreviousButton"/);
+  assert.match(html, /id="freeNextButton"/);
+  assert.match(html, /Relatório personalizado/);
+  assert.match(html, /Resumo da auditoria/);
+  assert.match(html, /Jogo interativo/);
+  assert.match(html, /Ranking/);
 });
 
 test('jogo mostra três vidas, game over e usa o novo boneco detalhado', () => {

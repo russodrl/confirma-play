@@ -6,8 +6,9 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 const params = new URLSearchParams(location.search);
 const DEMO = params.get('demo') === '1';
 const PRESENTER = params.get('presenter') === '1';
+const FREE = params.get('livre') === '1' && !PRESENTER;
 const FINAL_URL = 'https://confirmaplay.com/bni-up-4-setembro/';
-const phaseBySlide = ['lobby', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'personalized', 'presentation', 'game', 'game', 'podium'];
+const phaseBySlide = ['lobby', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'personalized', 'presentation', 'game', 'game'];
 
 const entryGate = $('#entryGate');
 const presenterGate = $('#presenterGate');
@@ -18,6 +19,9 @@ const joinError = $('#joinError');
 const participantBadge = $('#participantBadge');
 const syncStatus = $('#syncStatus');
 const presenterControls = $('#presenterControls');
+const freeControls = $('#freeControls');
+const freePreviousButton = $('#freePreviousButton');
+const freeNextButton = $('#freeNextButton');
 const questionDialog = $('#questionDialog');
 const startGameButton = $('#startGameButton');
 const jumpButton = $('#jumpButton');
@@ -120,8 +124,13 @@ function showExperience(member) {
   );
   renderPersonalized(member);
   initializeGame(member);
+  if (FREE) state = { ...state, slide: 0, phase: 'presentation', gameOpen: true };
   applyState(state);
-  if (!DEMO) startPolling();
+  if (FREE) {
+    document.body.classList.add('free-active');
+    freeControls.hidden = false;
+    setSync('online', 'Navegação livre');
+  } else if (!DEMO) startPolling();
   else setSync('online', 'Modo demonstração');
 }
 
@@ -144,6 +153,10 @@ joinForm.addEventListener('submit', async (event) => {
       localStorage.setItem('bniUpVisitorSampleSlug', member.slug.replace(/^visitante-/, ''));
     } else if (DEMO) {
       participantToken = 'demo';
+    } else if (FREE) {
+      participantToken = null;
+      localStorage.removeItem('bniUpParticipantToken');
+      localStorage.setItem('bniUpMemberSlug', member.slug);
     } else {
       const payload = await api({ action: 'register', name: member.name, company: member.company, playerId: playerId() });
       participantToken = payload.token;
@@ -275,7 +288,7 @@ async function finishGame(finalState) {
   gameResult.textContent = `Você chegou ao pódio com ${finalState.score} pontos e ${finalState.correctAnswers} respostas certas.`;
   gameResult.hidden = false;
   const durationMs = Math.max(1_000, Math.round(finalState.finishedAt - finalState.startedAt));
-  if (!DEMO && participantToken) {
+  if (!DEMO && !FREE && participantToken) {
     try {
       await api({ action: 'score', name: currentMember.name, company: currentMember.company, score: finalState.score, durationMs, correctAnswers: finalState.correctAnswers }, { Authorization: `Bearer ${participantToken}` });
       await pollOnce();
@@ -299,12 +312,16 @@ startGameButton.addEventListener('click', () => {
   game.start();
 });
 jumpButton.addEventListener('click', (event) => { event.stopPropagation(); game.jump(); });
-window.addEventListener('keydown', (event) => { if (event.code === 'Space' || event.code === 'ArrowUp') { event.preventDefault(); game?.jump(); } });
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'Space' || event.code === 'ArrowUp') { event.preventDefault(); game?.jump(); }
+  else if (FREE && event.code === 'ArrowLeft') navigateFree(-1);
+  else if (FREE && event.code === 'ArrowRight') navigateFree(1);
+});
 
 function renderRanking() {
   const list = $('#rankingList');
   list.replaceChildren();
-  if (!ranking.length) list.append(createNode('li', 'ranking-empty', 'O pódio ainda está aberto.'));
+  if (!ranking.length) list.append(createNode('li', 'ranking-empty', 'O ranking ainda está aberto.'));
   ranking.slice(0, 12).forEach((entry) => {
     const li = document.createElement('li');
     const identity = document.createElement('div');
@@ -312,13 +329,15 @@ function renderRanking() {
     li.append(identity, createNode('b', '', `${entry.score} pts`));
     list.append(li);
   });
-  const podium = $('#podium');
-  const order = [ranking[1], ranking[0], ranking[2]];
-  [...podium.children].forEach((place, index) => {
-    const entry = order[index];
-    place.querySelector('strong').textContent = entry?.name || 'Em disputa';
-    place.querySelector('small').textContent = entry ? `${entry.score} pontos` : '0 pontos';
-  });
+}
+
+function updateFreeControls() {
+  if (!FREE) return;
+  const labels = { 12: 'Relatório personalizado', 13: 'Resumo da auditoria', 14: 'Jogo interativo', 15: 'Ranking' };
+  $('#freeSlideCounter').textContent = `Slide ${state.slide + 1} de 16`;
+  $('#freeSlideLabel').textContent = labels[state.slide] || 'Apresentação';
+  freePreviousButton.disabled = state.slide === 0;
+  freeNextButton.disabled = state.slide === 15;
 }
 
 function applyState(next) {
@@ -332,7 +351,18 @@ function applyState(next) {
     jumpButton.hidden = true;
     gameOverPanel.hidden = true;
   }
+  updateFreeControls();
 }
+
+function navigateFree(delta) {
+  if (!FREE) return;
+  const slide = Math.max(0, Math.min(15, state.slide + delta));
+  applyState({ ...state, slide, phase: phaseBySlide[slide], gameOpen: true, version: state.version + 1 });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+freePreviousButton.addEventListener('click', () => navigateFree(-1));
+freeNextButton.addEventListener('click', () => navigateFree(1));
 
 async function pollOnce() {
   if (pollInFlight) return;
@@ -409,7 +439,7 @@ $('#previousSlideButton').addEventListener('click', () => {
   submitState({ slide, phase: phaseBySlide[slide], gameOpen: state.gameOpen });
 });
 $('#nextSlideButton').addEventListener('click', () => {
-  const slide = Math.min(16, state.slide + 1);
+  const slide = Math.min(15, state.slide + 1);
   submitState({ slide, phase: phaseBySlide[slide], gameOpen: state.gameOpen });
 });
 $('#releaseGameButton').addEventListener('click', () => submitState({ slide: 14, phase: 'game', gameOpen: true }));
@@ -436,7 +466,7 @@ function restoreParticipant() {
   }
   const token = localStorage.getItem('bniUpParticipantToken');
   const member = memberBySlug(slug);
-  if (member && token && !PRESENTER) {
+  if (member && (token || FREE) && !PRESENTER) {
     participantToken = token;
     showExperience(member);
     return true;
@@ -446,6 +476,12 @@ function restoreParticipant() {
 
 function initialize() {
   populateMembers();
+  if (FREE) {
+    $('.gate-shell .eyebrow').textContent = 'Versão livre';
+    $('#entryTitle').textContent = 'Veja a apresentação no seu ritmo.';
+    $('.gate-copy').textContent = 'Escolha seu nome para navegar pelos slides, abrir seu relatório personalizado e jogar.';
+    $('#joinButton').textContent = 'Abrir apresentação livre';
+  }
   $('#entryQr').src = `https://api.qrserver.com/v1/create-qr-code/?size=380x380&margin=12&data=${encodeURIComponent(FINAL_URL)}`;
   $('#visibleBrandCount').textContent = String(members.filter((member) => member.discoverability.position !== null).length);
   if (PRESENTER) {
