@@ -1,4 +1,4 @@
-import { DEFAULT_STATE, issueParticipantToken, normalizeScore, normalizeState, rankScores, verifyParticipantToken, verifyPresenterPin } from '../lib/bni-live.js';
+import { DEFAULT_STATE, issueParticipantToken, migrateLegacyState, normalizeScore, normalizeState, rankScores, verifyParticipantToken, verifyPresenterPin } from '../lib/bni-live.js';
 import { findMember, publicMember } from '../lib/bni-members.js';
 
 const STATE_TAB = 'BNI Live';
@@ -77,7 +77,7 @@ function parseState(row = []) {
   const version = Number(row[3] || 0);
   const updatedAt = row[4] || null;
   try {
-    const checked = normalizeState({ slide, phase, gameOpen }, { ...DEFAULT_STATE, version: Math.max(-1, version - 1) }, updatedAt || new Date(0).toISOString());
+    const checked = normalizeState(migrateLegacyState({ slide, phase, gameOpen }), { ...DEFAULT_STATE, version: Math.max(-1, version - 1) }, updatedAt || new Date(0).toISOString());
     return { ...checked, version, updatedAt };
   } catch {
     return { ...DEFAULT_STATE };

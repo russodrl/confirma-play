@@ -200,11 +200,13 @@
       </section>
 
       <section id="personalizedSlide" class="slide slide-personalized" data-slide="12" hidden>
+        <p class="slide-type slide-type-report">Relatório personalizado</p>
         <p class="eyebrow">Esta parte é só sua</p>
         <div id="personalizedContent"></div>
       </section>
 
       <section class="slide" data-slide="13" hidden>
+        <p class="slide-type slide-type-report">Resumo da auditoria</p>
         <p class="eyebrow">O teste que fizemos antes da reunião</p>
         <h2>Quando alguém pesquisa pelo serviço, sua empresa aparece?</h2>
         <div class="big-result"><strong id="visibleBrandCount">1</strong><span>das 27 marcas apareceu entre os 10 primeiros resultados da busca genérica correspondente.</span></div>
@@ -212,6 +214,7 @@
       </section>
 
       <section class="slide slide-game" data-slide="14" hidden>
+        <p class="slide-type slide-type-game">Jogo interativo</p>
         <div class="game-heading">
           <div><p class="eyebrow">Desafio final</p><h2>Corrida das Referências</h2></div>
           <p>Chegue ao pódio do BNI. Colete referências, evite indicações vagas e responda aos checkpoints.</p>
@@ -241,32 +244,28 @@
       </section>
 
       <section class="slide" data-slide="15" hidden>
+        <p class="slide-type slide-type-ranking">Ranking</p>
         <p class="eyebrow">Ao vivo até o fim da reunião</p>
         <h2>Ranking BNI UP</h2>
-        <ol id="rankingList" class="ranking-list"><li class="ranking-empty">O pódio ainda está aberto.</li></ol>
-      </section>
-
-      <section class="slide slide-podium" data-slide="16" hidden>
-        <p class="eyebrow light">Chegamos ao pódio</p>
-        <h2>Quem reconhece a oportunidade certa, indica melhor.</h2>
-        <div id="podium" class="podium" aria-label="Pódio da Corrida das Referências">
-          <article class="place second"><span>2</span><strong>Em disputa</strong><small>0 pontos</small></article>
-          <article class="place first"><span>1</span><strong>Em disputa</strong><small>0 pontos</small></article>
-          <article class="place third"><span>3</span><strong>Em disputa</strong><small>0 pontos</small></article>
-        </div>
-        <p class="closing-line">Inteligência transforma trabalho. Atenção transforma negócio.</p>
+        <ol id="rankingList" class="ranking-list"><li class="ranking-empty">O ranking ainda está aberto.</li></ol>
       </section>
     </main>
 
     <div id="presenterControls" class="presenter-controls" hidden>
       <button id="previousSlideButton" type="button" aria-label="Slide anterior">‹</button>
       <div class="slide-buttons" aria-label="Selecionar slide">
-        <button type="button" data-slide-button="0">1</button><button type="button" data-slide-button="1">2</button><button type="button" data-slide-button="2">3</button><button type="button" data-slide-button="3">4</button><button type="button" data-slide-button="4">5</button><button type="button" data-slide-button="5">6</button><button type="button" data-slide-button="6">7</button><button type="button" data-slide-button="7">8</button><button type="button" data-slide-button="8">9</button><button type="button" data-slide-button="9">10</button><button type="button" data-slide-button="10">11</button><button type="button" data-slide-button="11">12</button><button type="button" data-slide-button="12">13</button><button type="button" data-slide-button="13">14</button><button type="button" data-slide-button="14">15</button><button type="button" data-slide-button="15">16</button><button type="button" data-slide-button="16">17</button>
+        <button type="button" data-slide-button="0">1</button><button type="button" data-slide-button="1">2</button><button type="button" data-slide-button="2">3</button><button type="button" data-slide-button="3">4</button><button type="button" data-slide-button="4">5</button><button type="button" data-slide-button="5">6</button><button type="button" data-slide-button="6">7</button><button type="button" data-slide-button="7">8</button><button type="button" data-slide-button="8">9</button><button type="button" data-slide-button="9">10</button><button type="button" data-slide-button="10">11</button><button type="button" data-slide-button="11">12</button><button type="button" data-slide-button="12" title="Relatório personalizado">13</button><button type="button" data-slide-button="13" title="Resumo da auditoria">14</button><button type="button" data-slide-button="14" title="Jogo interativo">15</button><button type="button" data-slide-button="15" title="Ranking">16</button>
       </div>
       <button id="nextSlideButton" type="button" aria-label="Próximo slide">›</button>
       <button id="releaseGameButton" class="control-primary" type="button">Liberar jogo</button>
       <button id="resetLiveButton" class="control-danger" type="button">Reiniciar sala</button>
     </div>
+
+    <nav id="freeControls" class="free-controls" aria-label="Navegação livre da apresentação" hidden>
+      <button id="freePreviousButton" type="button" aria-label="Slide anterior">‹</button>
+      <div class="free-position"><strong id="freeSlideCounter">Slide 1 de 16</strong><span id="freeSlideLabel">Apresentação</span></div>
+      <button id="freeNextButton" type="button" aria-label="Próximo slide">›</button>
+    </nav>
   </div>
 
   <dialog id="questionDialog" class="question-dialog">

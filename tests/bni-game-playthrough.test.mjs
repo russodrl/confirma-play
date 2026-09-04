@@ -41,6 +41,12 @@ assert.equal(answered, 6);
 assert.equal(await page.locator('#bniGame').getAttribute('data-correct-answers'), '6');
 assert.match(await page.locator('#gameResult').innerText(), /chegou ao pódio/i);
 assert.match(await page.locator('#rankingList').innerText(), /Amílcar César/);
+if (await page.locator('#freeControls').isVisible()) {
+  await page.click('#freeNextButton');
+  assert.equal(await page.locator('[data-slide="15"]').isVisible(), true);
+  assert.match(await page.locator('#freeSlideLabel').innerText(), /Ranking/i);
+  assert.match(await page.locator('#rankingList').innerText(), /Amílcar César/);
+}
 assert.deepEqual(errors, []);
 console.log(JSON.stringify({ won: true, answered, score: await page.locator('#bniGame').getAttribute('data-score'), durationMs: Date.now() - started, errors }, null, 2));
 await browser.close();
