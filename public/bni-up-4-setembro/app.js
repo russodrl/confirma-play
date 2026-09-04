@@ -177,7 +177,9 @@ function renderPersonalized(member) {
   main.append(opportunities);
 
   const audit = createNode('aside', 'audit-panel');
-  audit.append(createNode('p', 'audit-label', 'Palavra-chave testada'), createNode('div', 'keyword-chip', member.discoverability.keyword));
+  const keywordList = createNode('div', 'keyword-list');
+  member.keywords.forEach((keyword) => keywordList.append(createNode('div', 'keyword-chip', keyword)));
+  audit.append(createNode('p', 'audit-label', 'Palavras-chave testadas'), keywordList);
   const searchResult = createNode('div', 'search-result');
   searchResult.append(
     createNode('strong', '', member.discoverability.position ? `Apareceu na posição ${member.discoverability.position}` : 'Não apareceu entre os 10 resultados'),
