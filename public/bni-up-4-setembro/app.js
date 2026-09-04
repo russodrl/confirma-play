@@ -34,6 +34,11 @@ let gameStarted = false;
 let state = { slide: 0, phase: 'lobby', gameOpen: false, version: 0, updatedAt: null };
 let ranking = [];
 let pollTimer = null;
+let pollInFlight = false;
+let consecutivePollFailures = 0;
+const POLL_INTERVAL_MS = 1_000;
+const POLL_RETRY_MS = 500;
+const SYNC_FAILURE_THRESHOLD = 3;
 
 function setSync(mode, text) {
   syncStatus.dataset.state = mode;
@@ -293,23 +298,34 @@ function applyState(next) {
 }
 
 async function pollOnce() {
+  if (pollInFlight) return;
+  pollInFlight = true;
   try {
-    const response = await fetch(`/api/bni-live?ts=${Date.now()}`, { headers: { Accept: 'application/json' } });
+    const response = await fetch('/api/bni-live', { headers: { Accept: 'application/json' } });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error || 'offline');
     applyState(payload.state);
     ranking = payload.ranking || [];
     renderRanking();
+    consecutivePollFailures = 0;
     setSync(payload.live ? 'online' : 'offline', payload.live ? 'Ao vivo' : 'Modo local');
   } catch {
-    setSync('offline', 'Reconectando');
+    consecutivePollFailures += 1;
+    if (consecutivePollFailures >= SYNC_FAILURE_THRESHOLD) setSync('offline', 'Reconectando');
+  } finally {
+    pollInFlight = false;
   }
 }
 
+async function schedulePoll() {
+  await pollOnce();
+  const delay = consecutivePollFailures ? POLL_RETRY_MS : POLL_INTERVAL_MS;
+  pollTimer = setTimeout(schedulePoll, delay);
+}
+
 function startPolling() {
-  clearInterval(pollTimer);
-  pollOnce();
-  pollTimer = setInterval(pollOnce, 1_200);
+  clearTimeout(pollTimer);
+  schedulePoll();
 }
 
 async function submitState(next) {
