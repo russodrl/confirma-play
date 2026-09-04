@@ -38,7 +38,7 @@ let pollInFlight = false;
 let consecutivePollFailures = 0;
 const POLL_INTERVAL_MS = 1_000;
 const POLL_RETRY_MS = 500;
-const SYNC_FAILURE_THRESHOLD = 3;
+const SYNC_FAILURE_THRESHOLD = 6;
 
 function setSync(mode, text) {
   syncStatus.dataset.state = mode;
@@ -386,8 +386,10 @@ $('#presenterLoginForm').addEventListener('submit', async (event) => {
     if (DEMO) {
       if (pin !== '482731') throw new Error('PIN inválido');
     } else {
-      const payload = await api({ action: 'state', ...state }, { 'X-Presenter-Pin': pin });
+      const payload = await api({ action: 'presenter' }, { 'X-Presenter-Pin': pin });
       state = payload.state;
+      ranking = payload.ranking || [];
+      renderRanking();
     }
     presenterPin = pin;
     sessionStorage.setItem('bniPresenterPin', pin);

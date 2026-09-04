@@ -1,4 +1,4 @@
-import { DEFAULT_STATE, issueParticipantToken, normalizeScore, normalizeState, rankScores, verifyParticipantToken, verifyPresenterPin } from '../lib/bni-live.js';
+import { createAsyncTtlCache, DEFAULT_STATE, issueParticipantToken, normalizeScore, normalizeState, rankScores, verifyParticipantToken, verifyPresenterPin } from '../lib/bni-live.js';
 import { findMember, publicMember } from '../lib/bni-members.js';
 
 const STATE_TAB = 'BNI Live';
@@ -134,6 +134,16 @@ async function resetLive(token) {
   await writeState(token, { ...DEFAULT_STATE, updatedAt: new Date().toISOString() });
 }
 
+const getAccessToken = createAsyncTtlCache(accessToken, 45 * 60_000);
+const ensureStorageReady = createAsyncTtlCache(async () => {
+  await ensureTabs(await getAccessToken());
+  return true;
+}, 10 * 60_000);
+const getCachedSnapshot = createAsyncTtlCache(async () => {
+  const token = await getAccessToken();
+  return readSnapshot(token);
+}, 1_500, Date.now, 30_000);
+
 function bodyOf(req) {
   if (typeof req.body === 'string') {
     try { return JSON.parse(req.body); } catch { return {}; }
@@ -155,10 +165,8 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, live: false, state: { ...DEFAULT_STATE }, ranking: [] });
     }
     try {
-      const token = await accessToken();
-      await ensureTabs(token);
-      const snapshot = await readSnapshot(token);
-      res.setHeader('Cache-Control', 'public, s-maxage=1, stale-while-revalidate=3');
+      const snapshot = await getCachedSnapshot();
+      res.setHeader('Cache-Control', 'public, s-maxage=1, stale-while-revalidate=2');
       return res.status(200).json({ ok: true, live: true, ...snapshot });
     } catch (error) {
       console.error('[bni-live] snapshot', { message: error?.message });
@@ -181,20 +189,35 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, member: publicMember(member), token: issueParticipantToken(member.slug, playerId, secret) });
   }
 
+  if (body.action === 'presenter') {
+    const pin = req.headers?.['x-presenter-pin'] || body.pin;
+    if (!verifyPresenterPin(pin, process.env.BNI_PRESENTER_PIN)) return res.status(401).json({ error: 'PIN inválido' });
+    if (!configured()) return res.status(503).json({ error: 'Armazenamento ainda não configurado' });
+    try {
+      await ensureStorageReady();
+      return res.status(200).json({ ok: true, ...(await getCachedSnapshot()) });
+    } catch (error) {
+      console.error('[bni-live] presenter-login', { message: error?.message });
+      return res.status(503).json({ error: 'Não foi possível abrir o controle' });
+    }
+  }
+
   if (body.action === 'state' || body.action === 'reset') {
     const pin = req.headers?.['x-presenter-pin'] || body.pin;
     if (!verifyPresenterPin(pin, process.env.BNI_PRESENTER_PIN)) return res.status(401).json({ error: 'PIN inválido' });
     if (!configured()) return res.status(503).json({ error: 'Armazenamento ainda não configurado' });
     try {
-      const token = await accessToken();
-      await ensureTabs(token);
+      const token = await getAccessToken();
+      await ensureStorageReady();
       if (body.action === 'reset') {
         await resetLive(token);
+        getCachedSnapshot.set({ state: { ...DEFAULT_STATE }, ranking: [] });
         return res.status(200).json({ ok: true, state: { ...DEFAULT_STATE } });
       }
-      const snapshot = await readSnapshot(token);
+      const snapshot = await getCachedSnapshot();
       const state = normalizeState(body, snapshot.state);
       await writeState(token, state);
+      getCachedSnapshot.set({ state, ranking: snapshot.ranking });
       return res.status(200).json({ ok: true, state });
     } catch (error) {
       console.error('[bni-live] presenter', { message: error?.message });
@@ -214,12 +237,13 @@ export default async function handler(req, res) {
     let normalized;
     try { normalized = normalizeScore(body); } catch { return res.status(400).json({ error: 'Pontuação inválida' }); }
     try {
-      const token = await accessToken();
-      await ensureTabs(token);
-      const snapshot = await readSnapshot(token);
+      const token = await getAccessToken();
+      await ensureStorageReady();
+      const snapshot = await getCachedSnapshot();
       if (!snapshot.state.gameOpen) return res.status(403).json({ error: 'O jogo ainda não foi liberado pelo apresentador' });
       const entry = { ...normalized, playerId: session.playerId, memberSlug: member.slug, name: member.name, company: member.company, createdAt: new Date().toISOString() };
       await appendScore(token, entry);
+      getCachedSnapshot.set({ state: snapshot.state, ranking: rankScores([...snapshot.ranking, entry]) });
       recentScores.set(session.playerId, now);
       return res.status(201).json({ ok: true, entry });
     } catch (error) {

@@ -7,7 +7,8 @@ import {
   issueParticipantToken,
   verifyParticipantToken,
   normalizeScore,
-  rankScores
+  rankScores,
+  createAsyncTtlCache
 } from '../lib/bni-live.js';
 
 test('estado padrão mantém participantes no lobby com jogo bloqueado', () => {
@@ -68,4 +69,60 @@ test('ranking mantém melhor resultado por jogador e desempata por tempo', () =>
   ]);
   assert.deepEqual(ranked.map((entry) => entry.playerId), ['b', 'a', 'c']);
   assert.deepEqual(ranked.map((entry) => entry.position), [1, 2, 3]);
+});
+
+test('cache assíncrono agrupa consultas simultâneas e respeita expiração e limpeza', async () => {
+  let now = 1_000;
+  let calls = 0;
+  const cached = createAsyncTtlCache(async () => {
+    calls += 1;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    return { calls };
+  }, 1_000, () => now);
+
+  const simultaneous = await Promise.all(Array.from({ length: 30 }, () => cached()));
+  assert.equal(calls, 1);
+  assert.ok(simultaneous.every((value) => value.calls === 1));
+
+  now = 1_999;
+  assert.equal((await cached()).calls, 1);
+  now = 2_001;
+  assert.equal((await cached()).calls, 2);
+  cached.clear();
+  assert.equal((await cached()).calls, 3);
+});
+
+test('cache assíncrono conserva o último estado durante uma falha transitória', async () => {
+  let now = 10_000;
+  let fail = false;
+  const cached = createAsyncTtlCache(async () => {
+    if (fail) throw new Error('planilha temporariamente indisponível');
+    return { slide: 8 };
+  }, 1_000, () => now, 30_000);
+
+  assert.deepEqual(await cached(), { slide: 8 });
+  now = 11_001;
+  fail = true;
+  assert.deepEqual(await cached(), { slide: 8 });
+  now = 41_001;
+  await assert.rejects(cached(), /temporariamente indisponível/);
+});
+
+test('cache assíncrono permite publicar imediatamente um estado confirmado', async () => {
+  let loads = 0;
+  const cached = createAsyncTtlCache(async () => ({ slide: ++loads }), 1_000);
+  assert.deepEqual(await cached(), { slide: 1 });
+  cached.set({ slide: 12 });
+  assert.deepEqual(await cached(), { slide: 12 });
+  assert.equal(loads, 1);
+});
+
+test('uma leitura antiga não sobrescreve um estado novo confirmado pelo apresentador', async () => {
+  let resolveLoad;
+  const cached = createAsyncTtlCache(() => new Promise((resolve) => { resolveLoad = resolve; }), 1_000);
+  const pending = cached();
+  cached.set({ slide: 12 });
+  resolveLoad({ slide: 3 });
+  assert.deepEqual(await pending, { slide: 12 });
+  assert.deepEqual(await cached(), { slide: 12 });
 });
