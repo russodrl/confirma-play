@@ -190,6 +190,18 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, member: publicMember(member), token: issueParticipantToken(member.slug, playerId, secret) });
   }
 
+  if (body.action === 'presenter') {
+    const pin = req.headers?.['x-presenter-pin'] || body.pin;
+    if (!verifyPresenterPin(pin, process.env.BNI_PRESENTER_PIN)) return res.status(401).json({ error: 'PIN inválido' });
+    if (!configured()) return res.status(503).json({ error: 'Armazenamento ainda não configurado' });
+    try {
+      return res.status(200).json({ ok: true, ...(await getCachedSnapshot()) });
+    } catch (error) {
+      console.error('[bni-live] presenter-login', { message: error?.message });
+      return res.status(503).json({ error: 'Não foi possível abrir o controle' });
+    }
+  }
+
   if (body.action === 'state' || body.action === 'reset') {
     const pin = req.headers?.['x-presenter-pin'] || body.pin;
     if (!verifyPresenterPin(pin, process.env.BNI_PRESENTER_PIN)) return res.status(401).json({ error: 'PIN inválido' });
@@ -202,7 +214,7 @@ export default async function handler(req, res) {
         getCachedSnapshot.set({ state: { ...DEFAULT_STATE }, ranking: [] });
         return res.status(200).json({ ok: true, state: { ...DEFAULT_STATE } });
       }
-      const snapshot = await readSnapshot(token);
+      const snapshot = await getCachedSnapshot();
       const state = normalizeState(body, snapshot.state);
       await writeState(token, state);
       getCachedSnapshot.set({ state, ranking: snapshot.ranking });
@@ -227,7 +239,7 @@ export default async function handler(req, res) {
     try {
       const token = await getAccessToken();
       await ensureStorageReady();
-      const snapshot = await readSnapshot(token);
+      const snapshot = await getCachedSnapshot();
       if (!snapshot.state.gameOpen) return res.status(403).json({ error: 'O jogo ainda não foi liberado pelo apresentador' });
       const entry = { ...normalized, playerId: session.playerId, memberSlug: member.slug, name: member.name, company: member.company, createdAt: new Date().toISOString() };
       await appendScore(token, entry);

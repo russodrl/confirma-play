@@ -79,6 +79,7 @@ test('controle e liberação do jogo usam a nova sequência de dezessete slides'
   assert.match(app, /const phaseBySlide = \[[^\]]+\]/);
   assert.match(app, /Math\.min\(16, state\.slide \+ 1\)/);
   assert.match(app, /submitState\(\{ slide: 14, phase: 'game', gameOpen: true \}\)/);
+  assert.match(app, /action: 'presenter'/);
 });
 
 test('jogo mostra três vidas, game over e usa o novo boneco detalhado', () => {

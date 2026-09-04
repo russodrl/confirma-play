@@ -96,6 +96,11 @@ test('trinta celulares simultâneos compartilham token, preparação e leitura d
     assert.equal(calls.filter((url) => url.includes('oauth2.googleapis.com')).length, 1);
     assert.equal(calls.filter((url) => url.includes('fields=sheets.properties.title')).length, 1);
     assert.equal(calls.filter((url) => url.includes('values:batchGet')).length, 1);
+    const presenterResponse = responseHarness();
+    await handler({ method: 'POST', headers: { 'x-presenter-pin': '482731' }, body: { action: 'presenter' } }, presenterResponse);
+    assert.equal(presenterResponse.statusCode, 200);
+    assert.equal(presenterResponse.payload.state.slide, 3);
+    assert.equal(calls.filter((url) => url.includes('valueInputOption=RAW')).length, 0);
   } finally {
     global.fetch = originalFetch;
     for (const key of keys) {
