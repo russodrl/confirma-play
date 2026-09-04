@@ -17,7 +17,7 @@ for (const size of sizes) {
   await page.fill('#memberSelect', 'Amílcar César');
   await page.fill('#companyInput', 'i9Cozinhas');
   await page.click('#joinButton');
-  await page.evaluate(() => window.__bniDebug.setState({ slide: 6, phase: 'game', gameOpen: true, version: 2 }));
+  await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game', gameOpen: true, version: 2 }));
   await page.waitForTimeout(650);
   const geometry = await page.evaluate(() => {
     const button = document.querySelector('#startGameButton').getBoundingClientRect();

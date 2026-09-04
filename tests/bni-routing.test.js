@@ -42,3 +42,22 @@ test('entrada permite digitar nome e empresa com sugestões', () => {
   assert.match(html, /<datalist id="companyOptions"><\/datalist>/);
   assert.doesNotMatch(html, /<select id="memberSelect"/);
 });
+
+test('apresentação ensina IA, marketing, uso conjunto, ferramentas e serviços antes da personalização', () => {
+  assert.equal((html.match(/data-slide="\d+"/g) || []).length, 17);
+  assert.match(html, /O poder da inteligência artificial/);
+  assert.match(html, /O poder do marketing digital/);
+  assert.match(html, /Quando IA e marketing trabalham juntos/);
+  assert.match(html, /Resultados possíveis para uma empresa/);
+  assert.match(html, /Ferramentas para usar no dia a dia/);
+  assert.match(html, /O que o Russo faz pelos clientes/);
+  assert.match(html, /Quando indicar o Russo/);
+  assert.match(html, /id="personalizedSlide"[^>]+data-slide="12"/);
+  assert.equal((html.match(/data-slide-button="\d+"/g) || []).length, 17);
+});
+
+test('controle e liberação do jogo usam a nova sequência de dezessete slides', () => {
+  assert.match(app, /const phaseBySlide = \[[^\]]+\]/);
+  assert.match(app, /Math\.min\(16, state\.slide \+ 1\)/);
+  assert.match(app, /submitState\(\{ slide: 14, phase: 'game', gameOpen: true \}\)/);
+});

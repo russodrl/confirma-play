@@ -7,7 +7,7 @@ const params = new URLSearchParams(location.search);
 const DEMO = params.get('demo') === '1';
 const PRESENTER = params.get('presenter') === '1';
 const FINAL_URL = 'https://confirmaplay.com/bni-up-4-setembro/';
-const phaseBySlide = ['lobby', 'presentation', 'presentation', 'presentation', 'personalized', 'presentation', 'game', 'game', 'podium'];
+const phaseBySlide = ['lobby', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'presentation', 'personalized', 'presentation', 'game', 'game', 'podium'];
 
 const entryGate = $('#entryGate');
 const presenterGate = $('#presenterGate');
@@ -382,10 +382,10 @@ $('#previousSlideButton').addEventListener('click', () => {
   submitState({ slide, phase: phaseBySlide[slide], gameOpen: state.gameOpen });
 });
 $('#nextSlideButton').addEventListener('click', () => {
-  const slide = Math.min(8, state.slide + 1);
+  const slide = Math.min(16, state.slide + 1);
   submitState({ slide, phase: phaseBySlide[slide], gameOpen: state.gameOpen });
 });
-$('#releaseGameButton').addEventListener('click', () => submitState({ slide: 6, phase: 'game', gameOpen: true }));
+$('#releaseGameButton').addEventListener('click', () => submitState({ slide: 14, phase: 'game', gameOpen: true }));
 $('#resetLiveButton').addEventListener('click', async () => {
   if (!confirm('Reiniciar apresentação e apagar o ranking desta edição?')) return;
   if (DEMO) {

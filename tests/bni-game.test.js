@@ -3,12 +3,20 @@ import assert from 'node:assert/strict';
 import { members } from '../lib/bni-members.js';
 import { buildGameQuestions, createGameState, answerCheckpoint, advanceGame } from '../public/bni-up-4-setembro/game.js';
 
-test('jogo cria seis checkpoints e inclui pergunta personalizada da empresa', () => {
+test('jogo cria seis checkpoints sobre indicação ao Russo, IA e marketing digital', () => {
   const member = members.find((item) => item.slug === 'amilcar-cesar');
   const questions = buildGameQuestions(member, members);
   assert.equal(questions.length, 6);
-  assert.ok(questions.some((question) => question.personalized && question.prompt.includes(member.company)));
+  const content = JSON.stringify(questions);
+  assert.ok(questions.filter((question) => /Russo/i.test(question.prompt)).length >= 2);
+  assert.match(content, /inteligência artificial|\bIA\b/i);
+  assert.match(content, /marketing digital/i);
+  assert.match(content, /indicar|indicação/i);
+  assert.match(content, /Pipedrive/);
+  assert.match(content, /Make/);
+  assert.doesNotMatch(content, /Digital Roots Lab/i);
   for (const question of questions) {
+    assert.equal(question.personalized, false);
     assert.equal(question.options.length, 3);
     assert.ok(Number.isInteger(question.correct));
     assert.ok(question.correct >= 0 && question.correct < 3);

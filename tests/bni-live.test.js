@@ -21,12 +21,14 @@ test('estado padrão mantém participantes no lobby com jogo bloqueado', () => {
 });
 
 test('estado aceita somente slides e fases conhecidas', () => {
-  const next = normalizeState({ slide: 4, phase: 'personalized', gameOpen: false }, DEFAULT_STATE, '2026-09-04T07:30:00.000Z');
-  assert.equal(next.slide, 4);
+  const next = normalizeState({ slide: 12, phase: 'personalized', gameOpen: false }, DEFAULT_STATE, '2026-09-04T07:30:00.000Z');
+  assert.equal(next.slide, 12);
   assert.equal(next.phase, 'personalized');
   assert.equal(next.gameOpen, false);
   assert.equal(next.version, 1);
   assert.equal(next.updatedAt, '2026-09-04T07:30:00.000Z');
+  assert.equal(normalizeState({ slide: 16, phase: 'podium' }, next).slide, 16);
+  assert.throws(() => normalizeState({ slide: 17, phase: 'podium' }, next));
   assert.throws(() => normalizeState({ slide: 999, phase: 'hack' }, DEFAULT_STATE));
 });
 
