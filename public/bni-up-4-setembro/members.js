@@ -18,7 +18,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://digitalrootslab.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -47,12 +47,16 @@ export const members = [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=IUDo%2Fz9R7slIJAvg4qmulQ%3D%3D&cmsv3=true&name=Aleksander+Palamarczuk"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://digitalrootslab.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Toda Magia Tem Método - Digital Roots Lab",
+      "note": "O website empresarial foi localizado pelo nome da empresa e lido com sucesso."
     }
   },
   {
@@ -133,7 +137,7 @@ export const members = [
     "company": "Remax Dragão",
     "profession": "Consultoria Imobiliária",
     "keywords": [
-      "imobiliária matosinhos",
+      "imobiliária porto",
       "vender casa no porto",
       "consultor imobiliário"
     ],
@@ -166,7 +170,7 @@ export const members = [
       }
     ],
     "discoverability": {
-      "keyword": "imobiliária matosinhos",
+      "keyword": "imobiliária porto",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -253,7 +257,7 @@ export const members = [
     "company": "Ecoreutil Unip Lda",
     "profession": "Renting de Impressoras",
     "keywords": [
-      "renting impressoras porto",
+      "renting impressoras",
       "aluguer de impressoras empresas",
       "gestão de impressão"
     ],
@@ -266,7 +270,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://ecoreutil.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -286,7 +290,7 @@ export const members = [
       }
     ],
     "discoverability": {
-      "keyword": "renting impressoras porto",
+      "keyword": "renting impressoras",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -295,12 +299,16 @@ export const members = [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=b449n2S9kU4A9VeVePlyNw%3D%3D&cmsv3=true&name=Belisa+Maria+Marques"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://ecoreutil.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Início - Ecoreutil",
+      "note": "O website empresarial foi localizado pelo nome da empresa e confirma as soluções de impressão da Ecoreutil."
     }
   },
   {
@@ -310,7 +318,7 @@ export const members = [
     "profession": "Construção Civil",
     "keywords": [
       "construção civil porto",
-      "empreiteiro geral matosinhos",
+      "empreiteiro geral",
       "obras e remodelações"
     ],
     "personalized": {
@@ -322,7 +330,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://carvadino.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -350,12 +358,16 @@ export const members = [
       {
         "label": "Canal publicado no perfil BNI",
         "url": "http://www.bninl.com"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://carvadino.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "leitura-inconclusiva",
+      "title": "Site em construção",
+      "note": "O domínio empresarial foi localizado, mas apresenta apenas uma página de site em construção."
     }
   },
   {
@@ -413,9 +425,9 @@ export const members = [
     "company": "Sabor A lenha",
     "profession": "Restaurante",
     "keywords": [
-      "restaurante matosinhos",
-      "comida peruana porto",
-      "onde almoçar matosinhos"
+      "restaurante com forno a lenha mindelo",
+      "restaurante tradicional mindelo",
+      "comida portuguesa mindelo"
     ],
     "personalized": {
       "headline": "Transformar procura local em reservas",
@@ -426,41 +438,34 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://saboralenha.com",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
       "youtube": null,
       "bni": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=V1CTeSCyBW3zZvpVge1Wfw%3D%3D&cmsv3=true&name=Daniel+Cardoso"
     },
-    "competitors": [
-      {
-        "name": "A Marisqueira de Matosinhos",
-        "url": "https://amarisqueiradematosinhos.com/",
-        "reason": "Presença entre os primeiros resultados da palavra-chave analisada."
-      },
-      {
-        "name": "Restaurante Meia-Nau",
-        "url": "https://www.meianaurestaurante.com/",
-        "reason": "Presença entre os primeiros resultados da palavra-chave analisada."
-      }
-    ],
+    "competitors": [],
     "discoverability": {
-      "keyword": "restaurante matosinhos",
-      "position": null,
-      "status": "nao-aparece-nos-10-resultados",
-      "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
+      "keyword": "restaurante com forno a lenha mindelo",
+      "position": 1,
+      "status": "aparece-nos-10-resultados",
+      "note": "Sabor a Lenha apareceu na primeira posição analisada para este termo."
     },
     "sources": [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=V1CTeSCyBW3zZvpVge1Wfw%3D%3D&cmsv3=true&name=Daniel+Cardoso"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://saboralenha.com"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Sabor a Lenha",
+      "note": "O website confirma o restaurante Sabor a Lenha em Mindelo e a proposta de cozinha tradicional."
     }
   },
   {
@@ -586,8 +591,7 @@ export const members = [
     "company": "DoafConta – Contabilidade, Fiscalidade e Consultoria, Lda",
     "profession": "Contabilidade, Fiscalidade e Consultoria",
     "keywords": [
-      "contabilidade empresas porto",
-      "contabilista matosinhos",
+      "contabilista porto",
       "apoio fiscal empresas"
     ],
     "personalized": {
@@ -608,7 +612,7 @@ export const members = [
     },
     "competitors": [],
     "discoverability": {
-      "keyword": "contabilidade empresas porto",
+      "keyword": "contabilista porto",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -635,9 +639,9 @@ export const members = [
     "company": "Discurso Virtual",
     "profession": "Software ERP PHC",
     "keywords": [
-      "software PHC porto",
-      "implementação PHC",
-      "ERP para PME portugal"
+      "desenvolvimento de software",
+      "software de gestão PHC",
+      "TI para empresas"
     ],
     "personalized": {
       "headline": "Traduzir software em resultado operacional",
@@ -663,7 +667,7 @@ export const members = [
       }
     ],
     "discoverability": {
-      "keyword": "software PHC porto",
+      "keyword": "desenvolvimento de software",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -694,9 +698,9 @@ export const members = [
     "company": "Jolucor, Lda",
     "profession": "Metalomecânica Ligeira",
     "keywords": [
-      "metalomecânica porto",
-      "estruturas metálicas portugal",
-      "fabricação metalomecânica"
+      "metalomecanica",
+      "tornearia CNC",
+      "maquinação de peças"
     ],
     "personalized": {
       "headline": "Transformar capacidade industrial em prova",
@@ -707,7 +711,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://jolucor.pt",
       "instagram": null,
       "facebook": "http://facebook.com/lucianobmpinho",
       "linkedin": "http://pt.linkedin.com/pub/luciano-pinho/46/269/892",
@@ -722,7 +726,7 @@ export const members = [
       }
     ],
     "discoverability": {
-      "keyword": "metalomecânica porto",
+      "keyword": "metalomecanica",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -739,12 +743,16 @@ export const members = [
       {
         "label": "Canal publicado no perfil BNI",
         "url": "http://pt.linkedin.com/pub/luciano-pinho/46/269/892"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://jolucor.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Jolucor - Metalomecânica, Aço Inox e Equipamento Industrial",
+      "note": "O website empresarial foi localizado e confirma serviços e produtos de metalomecânica."
     }
   },
   {
@@ -766,7 +774,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://tracosfidalgos.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -795,12 +803,16 @@ export const members = [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=rV%2B%2B5NLSkFyPUXSL3fACjw%3D%3D&cmsv3=true&name=Luis+Maciel"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://tracosfidalgos.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Traços Fidalgos — Confeção Premium em Portugal",
+      "note": "O website empresarial foi localizado e confirma confeção, protótipos, uniformes e produção têxtil."
     }
   },
   {
@@ -809,9 +821,9 @@ export const members = [
     "company": "Grafica Valecambrense Lda",
     "profession": "Artes Gráficas e Tipografia",
     "keywords": [
-      "gráfica porto",
-      "impressão offset portugal",
-      "material gráfico empresas"
+      "gráfica vale de cambra",
+      "impressão offset",
+      "material gráfico empresa"
     ],
     "personalized": {
       "headline": "Ligar o digital ao material impresso",
@@ -831,10 +843,10 @@ export const members = [
     },
     "competitors": [],
     "discoverability": {
-      "keyword": "gráfica porto",
-      "position": null,
-      "status": "nao-aparece-nos-10-resultados",
-      "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
+      "keyword": "gráfica vale de cambra",
+      "position": 1,
+      "status": "aparece-nos-10-resultados",
+      "note": "Gráfica Vale Cambrense apareceu na primeira posição analisada para este termo."
     },
     "sources": [
       {
@@ -907,9 +919,9 @@ export const members = [
     "company": "Mbeirão",
     "profession": "Formação e Coaching",
     "keywords": [
-      "formação profissional porto",
-      "formação para empresas",
-      "cursos certificados portugal"
+      "formação pnl porto",
+      "coaching para líderes",
+      "consultoria empresarial"
     ],
     "personalized": {
       "headline": "Converter conhecimento em percursos claros",
@@ -940,7 +952,7 @@ export const members = [
       }
     ],
     "discoverability": {
-      "keyword": "formação profissional porto",
+      "keyword": "formação pnl porto",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -992,7 +1004,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": "http://www.pmca.pt",
+      "website": "https://pmca.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": "https://www.linkedin.com/in/nuno-contim-a60a039b/",
@@ -1012,8 +1024,8 @@ export const members = [
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=sYVvlmfuOX3bdtGixplomw%3D%3D&cmsv3=true&name=Nuno+Vieira"
       },
       {
-        "label": "Canal publicado no perfil BNI",
-        "url": "http://www.pmca.pt"
+        "label": "Website empresarial confirmado",
+        "url": "https://pmca.pt"
       },
       {
         "label": "Canal publicado no perfil BNI",
@@ -1021,9 +1033,9 @@ export const members = [
       }
     ],
     "websiteAudit": {
-      "status": "leitura-inconclusiva",
-      "title": "",
-      "note": "O website foi publicado no perfil BNI, mas a leitura automatizada não foi conclusiva nesta auditoria."
+      "status": "acessivel",
+      "title": "Home - Plurimérito",
+      "note": "O website foi lido com sucesso e apresenta consultoria de gestão, investimento, financiamento e formação."
     }
   },
   {
@@ -1045,7 +1057,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": "http://www.linkplas.pt",
+      "website": "https://www.linkplas.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": "http://www.linkedin.com/in/paula-rocha-64197780",
@@ -1076,8 +1088,8 @@ export const members = [
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=LIMqy5BJX%2Bx2gXXtT63xeQ%3D%3D&cmsv3=true&name=Paula+Rocha"
       },
       {
-        "label": "Canal publicado no perfil BNI",
-        "url": "http://www.linkplas.pt"
+        "label": "Website empresarial confirmado",
+        "url": "https://www.linkplas.pt"
       },
       {
         "label": "Canal publicado no perfil BNI",
@@ -1085,9 +1097,9 @@ export const members = [
       }
     ],
     "websiteAudit": {
-      "status": "leitura-inconclusiva",
-      "title": "",
-      "note": "O website foi publicado no perfil BNI, mas a leitura automatizada não foi conclusiva nesta auditoria."
+      "status": "acessivel",
+      "title": "Linkplas - Especialistas em Peças Plásticas",
+      "note": "O website empresarial respondeu corretamente e confirma a atividade da Linkplas."
     }
   },
   {
@@ -1109,7 +1121,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": "http://Www.comdominio.eu",
+      "website": "https://comdominio.eu",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -1140,14 +1152,14 @@ export const members = [
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=upsBewJ4kh3oQ%2Fdr3eB2dA%3D%3D&cmsv3=true&name=Ramiro+Silva"
       },
       {
-        "label": "Canal publicado no perfil BNI",
-        "url": "http://Www.comdominio.eu"
+        "label": "Website empresarial confirmado",
+        "url": "https://comdominio.eu"
       }
     ],
     "websiteAudit": {
-      "status": "leitura-inconclusiva",
-      "title": "",
-      "note": "O website foi publicado no perfil BNI, mas a leitura automatizada não foi conclusiva nesta auditoria."
+      "status": "acessivel",
+      "title": "COMDOMINIO",
+      "note": "O website empresarial foi localizado e lido com sucesso."
     }
   },
   {
@@ -1169,7 +1181,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://russodrl.github.io/paiva-ramalho-servicos/",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -1198,12 +1210,16 @@ export const members = [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=LNtATGOVHZXtJoj4kRP%2B1A%3D%3D&cmsv3=true&name=R%C3%BAben+Ramalho"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://russodrl.github.io/paiva-ramalho-servicos/"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Paiva & Ramalho | Jardinagem e Espaços Exteriores",
+      "note": "O website apresenta os serviços, processo e trabalhos reais da Paiva & Ramalho."
     }
   },
   {
@@ -1281,7 +1297,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://pt.zappysoftware.com/m/ruirocha-massagistaterapeutico",
       "instagram": "https://www.instagram.com/terapeutaruirocha/",
       "facebook": null,
       "linkedin": null,
@@ -1314,12 +1330,16 @@ export const members = [
       {
         "label": "Canal publicado no perfil BNI",
         "url": "https://www.instagram.com/terapeutaruirocha/"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://pt.zappysoftware.com/m/ruirocha-massagistaterapeutico"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "leitura-inconclusiva",
+      "title": "Online Booking",
+      "note": "O link de marcação foi confirmado no perfil profissional do Instagram, mas a leitura automatizada da página é limitada."
     }
   },
   {
@@ -1341,7 +1361,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://allthewaytravel.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -1370,12 +1390,16 @@ export const members = [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=KWzCH%2Bl%2BJ1wWYl0pBHHz8w%3D%3D&cmsv3=true&name=S%C3%A9rgio+Gon%C3%A7alves"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://allthewaytravel.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "AllTheWayTravel - Viagens à sua medida!",
+      "note": "O website empresarial foi localizado e confirma serviços de viagens personalizadas."
     }
   },
   {
@@ -1397,7 +1421,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": "http://www.sanchesdecastro.com",
+      "website": "https://www.sanchesdecastro.com",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -1428,14 +1452,14 @@ export const members = [
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=JC%2BPr%2FnTXLjOCGjjqRTuFw%3D%3D&cmsv3=true&name=Tiago+Castro"
       },
       {
-        "label": "Canal publicado no perfil BNI",
-        "url": "http://www.sanchesdecastro.com"
+        "label": "Website empresarial confirmado",
+        "url": "https://www.sanchesdecastro.com"
       }
     ],
     "websiteAudit": {
-      "status": "leitura-inconclusiva",
-      "title": "",
-      "note": "O website foi publicado no perfil BNI, mas a leitura automatizada não foi conclusiva nesta auditoria."
+      "status": "acessivel",
+      "title": "SANCHES DE CASTRO ARQUITECTURA",
+      "note": "O website empresarial foi lido com sucesso e apresenta projetos de arquitetura."
     }
   },
   {
@@ -1499,9 +1523,8 @@ export const members = [
     "company": "Construformas",
     "profession": "Gesso Cartonado e Construção Civil",
     "keywords": [
-      "gesso cartonado aveiro",
-      "tetos falsos portugal",
-      "pladur e divisórias"
+      "pladur porto",
+      "divisórias porto"
     ],
     "personalized": {
       "headline": "Mostrar acabamento, prazo e capacidade de execução",
@@ -1512,7 +1535,7 @@ export const members = [
       ]
     },
     "presence": {
-      "website": null,
+      "website": "https://www.construformas.pt",
       "instagram": null,
       "facebook": null,
       "linkedin": null,
@@ -1532,7 +1555,7 @@ export const members = [
       }
     ],
     "discoverability": {
-      "keyword": "gesso cartonado aveiro",
+      "keyword": "pladur porto",
       "position": null,
       "status": "nao-aparece-nos-10-resultados",
       "note": "A marca não apareceu entre os 10 resultados analisados para este termo."
@@ -1541,12 +1564,16 @@ export const members = [
       {
         "label": "Perfil oficial BNI NL UP",
         "url": "https://bninl.com/up/pt/memberdetails?encryptedMemberId=xXgqX0nX%2Bn2qAvCKnAKBwg%3D%3D&cmsv3=true&name=Vitor+Rocha"
+      },
+      {
+        "label": "Website empresarial confirmado",
+        "url": "https://www.construformas.pt"
       }
     ],
     "websiteAudit": {
-      "status": "sem-site-publicado",
-      "title": null,
-      "note": "O perfil oficial do BNI não publica um website empresarial próprio."
+      "status": "acessivel",
+      "title": "Construformas - Empresa de Construção e Remodelação em Portugal",
+      "note": "O website empresarial respondeu corretamente e apresenta serviços de construção e remodelação."
     }
   }
 ];

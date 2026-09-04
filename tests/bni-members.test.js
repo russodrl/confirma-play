@@ -85,3 +85,52 @@ test('login por nome tolera pequenos erros e rejeita entradas vagas', () => {
   assert.equal(findMemberByName('Rui'), null);
   assert.equal(findMemberByName('Pessoa inexistente'), null);
 });
+
+test('palavras-chave incorporam as correções fornecidas pelo Russo', () => {
+  const expected = {
+    'daniel-cardoso': ['restaurante com forno a lenha mindelo', 'restaurante tradicional mindelo', 'comida portuguesa mindelo'],
+    'vitor-rocha': ['pladur porto', 'divisórias porto'],
+    'miguel-beirao': ['formação pnl porto', 'coaching para líderes', 'consultoria empresarial'],
+    'luis-silva': ['gráfica vale de cambra', 'impressão offset', 'material gráfico empresa'],
+    'luciano-pinho': ['metalomecanica', 'tornearia CNC', 'maquinação de peças'],
+    'francisco-baptista': ['contabilista porto', 'apoio fiscal empresas'],
+    'belisa-marques': ['renting impressoras', 'aluguer de impressoras empresas', 'gestão de impressão'],
+    'bernardino-sousa': ['construção civil porto', 'empreiteiro geral', 'obras e remodelações'],
+    'andre-mayer': ['imobiliária porto', 'vender casa no porto', 'consultor imobiliário'],
+    'joao-alves': ['desenvolvimento de software', 'software de gestão PHC', 'TI para empresas']
+  };
+  for (const [slug, keywords] of Object.entries(expected)) {
+    const member = members.find((entry) => entry.slug === slug);
+    assert.deepEqual(member.keywords, keywords);
+    assert.equal(member.discoverability.keyword, keywords[0]);
+  }
+  assert.doesNotMatch(JSON.stringify(members.find((entry) => entry.slug === 'daniel-cardoso')), /peruana|matosinhos/i);
+  assert.doesNotMatch(JSON.stringify(members.find((entry) => entry.slug === 'bernardino-sousa').keywords), /matosinhos/i);
+});
+
+test('pesquisa complementar liga os sites empresariais confirmados', () => {
+  const expectedSites = {
+    'aleksander-palamarczuk': 'https://digitalrootslab.pt',
+    'belisa-marques': 'https://ecoreutil.pt',
+    'bernardino-sousa': 'https://carvadino.pt',
+    'daniel-cardoso': 'https://saboralenha.com',
+    'luciano-pinho': 'https://jolucor.pt',
+    'luis-maciel': 'https://tracosfidalgos.pt',
+    'nuno-vieira': 'https://pmca.pt',
+    'paula-rocha': 'https://www.linkplas.pt',
+    'ramiro-silva': 'https://comdominio.eu',
+    'ruben-ramalho': 'https://russodrl.github.io/paiva-ramalho-servicos/',
+    'rui-rocha': 'https://pt.zappysoftware.com/m/ruirocha-massagistaterapeutico',
+    'sergio-goncalves': 'https://allthewaytravel.pt',
+    'tiago-castro': 'https://www.sanchesdecastro.com',
+    'vitor-rocha': 'https://www.construformas.pt'
+  };
+  for (const [slug, website] of Object.entries(expectedSites)) {
+    const member = members.find((entry) => entry.slug === slug);
+    assert.equal(member.presence.website, website);
+    assert.ok(member.sources.some((source) => source.url === website));
+  }
+  const fresca = members.find((entry) => entry.slug === 'rui-andrade');
+  assert.equal(fresca.presence.website, null);
+  assert.doesNotMatch(JSON.stringify(fresca.sources), /frescainspiracao\.pt/i);
+});

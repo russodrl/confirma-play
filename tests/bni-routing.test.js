@@ -49,6 +49,11 @@ test('entrada usa um único campo de nome com empresa na sugestão e opção de 
   assert.doesNotMatch(html, /<select id="memberSelect"/);
 });
 
+test('slide personalizado mostra todas as palavras-chave validadas do membro', () => {
+  assert.match(app, /member\.keywords/);
+  assert.match(app, /keyword-list/);
+});
+
 test('apresentação ensina IA, marketing, uso conjunto, ferramentas e serviços antes da personalização', () => {
   assert.equal((html.match(/data-slide="\d+"/g) || []).length, 17);
   assert.match(html, /O poder da inteligência artificial/);

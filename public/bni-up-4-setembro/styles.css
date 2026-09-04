@@ -152,6 +152,7 @@ blockquote { margin: 0; max-width: 1080px; color: var(--navy); font-size: clamp(
 .opportunity-list li::before { content: '↗'; position: absolute; left: 14px; color: var(--red); font-weight: 900; }
 .audit-panel { display: grid; align-content: start; gap: 14px; background: var(--navy); color: #fff; }
 .audit-label { margin: 0; color: #aeb9ca; font-size: 11px; text-transform: uppercase; letter-spacing: .11em; font-weight: 900; }
+.keyword-list { display: flex; flex-wrap: wrap; gap: 7px; }
 .keyword-chip { width: fit-content; max-width: 100%; padding: 10px 13px; color: var(--navy); background: #fff; border-radius: 999px; font-weight: 800; overflow-wrap: anywhere; }
 .search-result { padding: 15px; border-radius: 16px; background: rgba(255,255,255,.08); }
 .search-result strong { display: block; color: #f4c75c; font-size: 18px; }
