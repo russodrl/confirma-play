@@ -20,3 +20,17 @@ test('rota limpa não depende de barra final para carregar recursos', () => {
   assert.match(html, /src="\/bni-up-4-setembro\/app\.js"/);
   assert.match(html, /href="\/bni-up-4-setembro\/styles\.css"/);
 });
+
+test('slide de personalização orienta a comparar com o celular ao lado', () => {
+  assert.match(html, /Olhe para o celular de quem está ao seu lado\./);
+  assert.match(html, /O próximo slide será diferente em cada tela\./);
+  assert.doesNotMatch(html, /Agora olhe para o seu celular\./);
+});
+
+test('sincronização compartilha cache e nunca sobrepõe requisições', () => {
+  assert.match(app, /fetch\('\/api\/bni-live'/);
+  assert.doesNotMatch(app, /\/api\/bni-live\?ts=/);
+  assert.doesNotMatch(app, /setInterval\(pollOnce/);
+  assert.match(app, /setTimeout\(schedulePoll,/);
+  assert.match(app, /pollInFlight/);
+});
