@@ -9,7 +9,6 @@ page.on('pageerror', (error) => errors.push(error.message));
 
 await page.goto(base, { waitUntil: 'networkidle' });
 await page.fill('#memberSelect', 'Amílcar César');
-await page.fill('#companyInput', 'i9Cozinhas');
 await page.click('#joinButton');
 await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game', gameOpen: true, version: 30 }));
 await page.click('#startGameButton');

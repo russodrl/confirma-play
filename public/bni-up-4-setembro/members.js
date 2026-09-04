@@ -130,7 +130,7 @@ export const members = [
   {
     "slug": "andre-mayer",
     "name": "André Mayer",
-    "company": "Remax Matosinhos",
+    "company": "Remax Dragão",
     "profession": "Consultoria Imobiliária",
     "keywords": [
       "imobiliária matosinhos",
@@ -750,7 +750,7 @@ export const members = [
   {
     "slug": "luis-maciel",
     "name": "Luis Maciel",
-    "company": "Troços Fidalgos",
+    "company": "Traços Fidalgos",
     "profession": "Uniformes Personalizados",
     "keywords": [
       "uniformes personalizados portugal",
@@ -903,8 +903,8 @@ export const members = [
   },
   {
     "slug": "miguel-beirao",
-    "name": "Miguel Beirao",
-    "company": "Neway Focus - Coaching & Consulting, Lda",
+    "name": "Miguel Beirão",
+    "company": "Mbeirão",
     "profession": "Formação e Coaching",
     "keywords": [
       "formação profissional porto",
@@ -976,7 +976,7 @@ export const members = [
   {
     "slug": "nuno-vieira",
     "name": "Nuno Vieira",
-    "company": "Plurimérito, Cons. Lda",
+    "company": "Plurimore",
     "profession": "Projetos de Investimento",
     "keywords": [
       "projetos de investimento portugal",
@@ -1093,7 +1093,7 @@ export const members = [
   {
     "slug": "ramiro-silva",
     "name": "Ramiro Silva",
-    "company": "Nósgerimos - Administração e Gestão de Condomínios",
+    "company": "Comdominio",
     "profession": "Administração de Condomínios",
     "keywords": [
       "administração de condomínios porto",
@@ -1325,7 +1325,7 @@ export const members = [
   {
     "slug": "sergio-goncalves",
     "name": "Sérgio Gonçalves",
-    "company": "Ephasus Travel, SA.",
+    "company": "All the Way Travel",
     "profession": "Agência de Viagens",
     "keywords": [
       "agência de viagens porto",
@@ -1496,7 +1496,7 @@ export const members = [
   {
     "slug": "vitor-rocha",
     "name": "Vitor Rocha",
-    "company": "Vitor e Rui Construção civil, lda",
+    "company": "Construformas",
     "profession": "Gesso Cartonado e Construção Civil",
     "keywords": [
       "gesso cartonado aveiro",

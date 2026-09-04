@@ -20,14 +20,12 @@
     </div>
     <p class="eyebrow">4 de setembro · Sea Porto Hotel</p>
     <h1 id="entryTitle">Esta apresentação conhece você.</h1>
-    <p class="gate-copy">Escolha seu nome. A experiência será sincronizada com o Russo, mas uma parte será criada só para a sua empresa.</p>
+    <p class="gate-copy">Escolha seu nome. A experiência será sincronizada com o Russo, mas uma parte será criada especialmente para você.</p>
     <form id="joinForm" class="join-card">
-      <label for="memberSelect">Seu nome</label>
+      <label for="memberSelect">Qual seu nome de membro no BNI?</label>
+      <p class="form-hint">Se tiver dúvida, está na ficha do BNI na sua frente.</p>
       <input id="memberSelect" type="text" list="memberOptions" autocomplete="name" placeholder="Digite ou escolha seu nome" required>
       <datalist id="memberOptions"></datalist>
-      <label for="companyInput">Sua empresa</label>
-      <input id="companyInput" type="text" list="companyOptions" autocomplete="organization" placeholder="Digite ou escolha sua empresa" required>
-      <datalist id="companyOptions"></datalist>
       <button id="joinButton" class="button button-primary" type="submit">Entrar na apresentação</button>
       <p id="joinError" class="form-error" role="alert" hidden></p>
     </form>

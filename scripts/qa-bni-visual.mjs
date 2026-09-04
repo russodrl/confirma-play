@@ -12,7 +12,6 @@ async function openParticipant(viewport, memberSlug = 'amilcar-cesar') {
   await page.goto(base, { waitUntil: 'networkidle' });
   const member = members.find((entry) => entry.slug === memberSlug);
   await page.fill('#memberSelect', member.name);
-  await page.fill('#companyInput', member.company);
   await page.click('#joinButton');
   await page.waitForSelector('#experience:not([hidden])');
   return page;

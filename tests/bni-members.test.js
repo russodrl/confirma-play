@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { members, findMember } from '../lib/bni-members.js';
+import { members, findMember, findMemberByName } from '../lib/bni-members.js';
 
 test('base BNI UP contém exatamente 27 membros únicos', () => {
   assert.equal(members.length, 27);
@@ -47,7 +47,7 @@ test('base pública não contém telefone nem e-mail da folha', () => {
 
 test('login encontra membros da base oficial por nome e empresa sem depender de acentos', () => {
   assert.equal(findMember('Aleksander Palamarczuk', 'Digital Roots Lab')?.slug, 'aleksander-palamarczuk');
-  assert.equal(findMember('vitor rocha', 'Vitor e Rui Construção civil, lda')?.slug, 'vitor-rocha');
+  assert.equal(findMember('vitor rocha', 'Construformas')?.slug, 'vitor-rocha');
   assert.equal(findMember('  FÁTIMA   OLIVEIRA ', '  FATYBRINDE ')?.slug, 'fatima-oliveira');
   assert.equal(findMember('Pessoa inexistente', 'Empresa inexistente'), null);
 });
@@ -59,8 +59,29 @@ test('login tolera erros pequenos no nome e na empresa', () => {
 });
 
 test('login aceita empresa sem sufixo societário, mas rejeita dados vagos ou desconhecidos', () => {
-  assert.equal(findMember('Vitor Rocha', 'Vitor e Rui Construção Civil')?.slug, 'vitor-rocha');
+  assert.equal(findMember('Vitor Rocha', 'Construforma')?.slug, 'vitor-rocha');
   assert.equal(findMember('Antonio', 'Construção'), null);
   assert.equal(findMember('Pessoa inventada', 'Digital Roots Lab'), null);
   assert.equal(findMember('', ''), null);
+});
+
+test('base contém as sete empresas corrigidas pelo Russo', () => {
+  const expected = new Map([
+    ['andre-mayer', 'Remax Dragão'],
+    ['sergio-goncalves', 'All the Way Travel'],
+    ['ramiro-silva', 'Comdominio'],
+    ['vitor-rocha', 'Construformas'],
+    ['luis-maciel', 'Traços Fidalgos'],
+    ['miguel-beirao', 'Mbeirão'],
+    ['nuno-vieira', 'Plurimore']
+  ]);
+  for (const [slug, company] of expected) assert.equal(members.find((member) => member.slug === slug)?.company, company);
+  assert.equal(members.find((member) => member.slug === 'miguel-beirao')?.name, 'Miguel Beirão');
+});
+
+test('login por nome tolera pequenos erros e rejeita entradas vagas', () => {
+  assert.equal(findMemberByName('Amilcar Ceasar')?.slug, 'amilcar-cesar');
+  assert.equal(findMemberByName('Miguel Beirao')?.slug, 'miguel-beirao');
+  assert.equal(findMemberByName('Rui'), null);
+  assert.equal(findMemberByName('Pessoa inexistente'), null);
 });

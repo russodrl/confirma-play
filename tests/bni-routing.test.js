@@ -37,11 +37,15 @@ test('sincronização compartilha cache e nunca sobrepõe requisições', () => 
   assert.match(app, /pollInFlight/);
 });
 
-test('entrada permite digitar nome e empresa com sugestões', () => {
+test('entrada usa um único campo de nome com empresa na sugestão e opção de visitante', () => {
   assert.match(html, /<input id="memberSelect"[^>]+list="memberOptions"/);
   assert.match(html, /<datalist id="memberOptions"><\/datalist>/);
-  assert.match(html, /<input id="companyInput"[^>]+list="companyOptions"/);
-  assert.match(html, /<datalist id="companyOptions"><\/datalist>/);
+  assert.match(html, /Qual seu nome de membro no BNI\?/);
+  assert.match(html, /Se tiver dúvida, está na ficha do BNI na sua frente\./);
+  assert.doesNotMatch(html, /id="companyInput"/);
+  assert.doesNotMatch(html, /id="companyOptions"/);
+  assert.match(app, /Visitante/);
+  assert.match(app, /visitante/);
   assert.doesNotMatch(html, /<select id="memberSelect"/);
 });
 

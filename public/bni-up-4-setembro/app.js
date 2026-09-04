@@ -1,4 +1,4 @@
-import { members, findMember, findMemberByName } from './members.js';
+import { members, findMemberByName } from './members.js';
 import { BNIGame } from './game.js';
 
 const $ = (selector) => document.querySelector(selector);
@@ -13,7 +13,6 @@ const entryGate = $('#entryGate');
 const presenterGate = $('#presenterGate');
 const experience = $('#experience');
 const memberSelect = $('#memberSelect');
-const companyInput = $('#companyInput');
 const joinForm = $('#joinForm');
 const joinError = $('#joinError');
 const participantBadge = $('#participantBadge');
@@ -68,23 +67,27 @@ function appendLink(container, label, url) {
 
 function populateMembers() {
   const memberOptions = $('#memberOptions');
-  const companyOptions = $('#companyOptions');
   members.forEach((member) => {
     const nameOption = document.createElement('option');
     nameOption.value = member.name;
     nameOption.label = member.company;
     memberOptions.append(nameOption);
-    const companyOption = document.createElement('option');
-    companyOption.value = member.company;
-    companyOption.label = member.name;
-    companyOptions.append(companyOption);
   });
+  const visitorOption = document.createElement('option');
+  visitorOption.value = 'Visitante';
+  visitorOption.label = 'Uma empresa será sorteada';
+  memberOptions.append(visitorOption);
 }
 
-memberSelect.addEventListener('input', () => {
-  const member = findMemberByName(memberSelect.value);
-  if (member) companyInput.value = member.company;
-});
+function randomMember() {
+  const values = new Uint32Array(1);
+  crypto.getRandomValues(values);
+  return members[values[0] % members.length];
+}
+
+function visitorMember(sampled) {
+  return { ...sampled, slug: `visitante-${sampled.slug}`, name: 'Visitante', visitor: true, sampledName: sampled.name };
+}
 
 function playerId() {
   let value = localStorage.getItem('bniUpPlayerId');
@@ -113,7 +116,7 @@ function showExperience(member) {
   experience.hidden = false;
   participantBadge.replaceChildren(
     createNode('strong', '', member.name),
-    createNode('small', '', member.company)
+    createNode('small', '', member.visitor ? `Empresa sorteada: ${member.company}` : member.company)
   );
   renderPersonalized(member);
   initializeGame(member);
@@ -125,18 +128,24 @@ function showExperience(member) {
 joinForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   joinError.hidden = true;
-  let member = findMember(memberSelect.value, companyInput.value);
+  const visitor = memberSelect.value.trim().toLocaleLowerCase('pt-PT') === 'visitante';
+  let member = visitor ? visitorMember(randomMember()) : findMemberByName(memberSelect.value);
   if (!member) {
-    joinError.textContent = 'Não encontramos essa combinação. Confira seu nome e sua empresa ou escolha uma das sugestões.';
+    joinError.textContent = 'Não encontramos esse nome. Confira sua ficha do BNI ou escolha uma das sugestões.';
     joinError.hidden = false;
     return;
   }
   $('#joinButton').disabled = true;
   try {
-    if (DEMO) {
+    if (visitor) {
+      participantToken = null;
+      localStorage.removeItem('bniUpParticipantToken');
+      localStorage.setItem('bniUpMemberSlug', 'visitante');
+      localStorage.setItem('bniUpVisitorSampleSlug', member.slug.replace(/^visitante-/, ''));
+    } else if (DEMO) {
       participantToken = 'demo';
     } else {
-      const payload = await api({ action: 'register', name: memberSelect.value, company: companyInput.value, playerId: playerId() });
+      const payload = await api({ action: 'register', name: member.name, company: member.company, playerId: playerId() });
       participantToken = payload.token;
       localStorage.setItem('bniUpParticipantToken', participantToken);
       localStorage.setItem('bniUpMemberSlug', member.slug);
@@ -157,9 +166,9 @@ function renderPersonalized(member) {
   const card = createNode('div', 'personal-card');
   const main = createNode('article', 'personal-main');
   main.append(
-    createNode('div', 'member-kicker', member.profession),
-    createNode('h2', '', member.name),
-    createNode('p', 'company-line', member.company),
+    createNode('div', 'member-kicker', member.visitor ? 'Empresa sorteada para o visitante' : member.profession),
+    createNode('h2', '', member.visitor ? member.company : member.name),
+    createNode('p', 'company-line', member.visitor ? member.profession : member.company),
     createNode('p', 'personal-headline', member.personalized.headline),
     createNode('p', 'personal-summary', member.personalized.summary)
   );
@@ -418,6 +427,11 @@ $('#resetLiveButton').addEventListener('click', async () => {
 
 function restoreParticipant() {
   const slug = localStorage.getItem('bniUpMemberSlug');
+  if (slug === 'visitante' && !PRESENTER) {
+    const sampled = memberBySlug(localStorage.getItem('bniUpVisitorSampleSlug')) || randomMember();
+    showExperience(visitorMember(sampled));
+    return true;
+  }
   const token = localStorage.getItem('bniUpParticipantToken');
   const member = memberBySlug(slug);
   if (member && token && !PRESENTER) {
