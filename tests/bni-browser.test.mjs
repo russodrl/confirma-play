@@ -9,10 +9,8 @@ page.on('pageerror', (error) => errors.push(`page:${error.message}`));
 page.on('console', (message) => { if (message.type() === 'error') errors.push(`console:${message.text()}`); });
 
 await page.goto(base, { waitUntil: 'networkidle' });
-assert.equal(await page.locator('#memberOptions option').count(), 27);
+assert.equal(await page.locator('#memberOptions option').count(), 28);
 await page.fill('#memberSelect', 'Amilcar Ceasar');
-assert.equal(await page.inputValue('#companyInput'), 'i9Cozinhas');
-await page.fill('#companyInput', 'i9 Cosinhas');
 await page.click('#joinButton');
 await page.waitForSelector('#experience:not([hidden])');
 assert.match(await page.locator('#participantBadge').innerText(), /Amílcar César/);
@@ -44,6 +42,16 @@ await presenter.click('#presenterLoginButton');
 assert.equal(await presenter.locator('#presenterControls').isVisible(), true);
 assert.equal(await presenter.locator('[data-slide-button]').count(), 17);
 assert.equal(await presenter.locator('#releaseGameButton').count(), 1);
+
+const visitor = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+await visitor.goto(base, { waitUntil: 'networkidle' });
+await visitor.fill('#memberSelect', 'Visitante');
+await visitor.click('#joinButton');
+await visitor.waitForSelector('#experience:not([hidden])');
+assert.match(await visitor.locator('#participantBadge').innerText(), /Visitante/);
+await visitor.evaluate(() => window.__bniDebug.setState({ slide: 12, phase: 'personalized', gameOpen: false, version: 30 }));
+assert.match(await visitor.locator('#personalizedSlide').innerText(), /Empresa sorteada para o visitante/i);
+assert.ok((await visitor.locator('#participantBadge small').innerText()).length > 2);
 
 console.log(JSON.stringify({ members: 27, participant: 'amilcar-cesar', distance, presenterControls: true, overflow: dimensions.scrollWidth - dimensions.innerWidth, errors }, null, 2));
 await browser.close();

@@ -15,7 +15,6 @@ for (const size of sizes) {
   const page = await browser.newPage({ viewport: { width: size.width, height: size.height }, isMobile: size.mobile, hasTouch: size.mobile });
   await page.goto(base, { waitUntil: 'networkidle' });
   await page.fill('#memberSelect', 'Amílcar César');
-  await page.fill('#companyInput', 'i9Cozinhas');
   await page.click('#joinButton');
   await page.evaluate(() => window.__bniDebug.setState({ slide: 14, phase: 'game', gameOpen: true, version: 2 }));
   await page.waitForTimeout(650);
