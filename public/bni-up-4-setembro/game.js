@@ -14,6 +14,8 @@ export function createGameState() {
     score: 0,
     referrals: 0,
     correctAnswers: 0,
+    lives: 3,
+    gameOver: false,
     checkpoint: 0,
     power: null,
     powerUntil: 0,
@@ -61,19 +63,19 @@ export function buildGameQuestions(member, allMembers) {
     },
     {
       personalized: false,
-      prompt: 'Qual ferramenta conecta CRM, e-mail, WhatsApp e Google Sheets em automações visuais?',
-      options: ['Pipedrive', 'Make', 'NotebookLM'],
+      prompt: 'Qual ferramenta conecta e-mail, WhatsApp e Google Sheets em automações visuais?',
+      options: ['Meta Ads Library', 'Make', 'NotebookLM'],
       correct: 1,
       power: 'shield',
-      explanation: 'O Make conecta aplicativos e executa fluxos automáticos. O Pipedrive organiza o funil comercial.'
+      explanation: 'O Make conecta aplicativos e executa fluxos automáticos entre ferramentas do dia a dia.'
     },
     {
       personalized: false,
       prompt: 'Em qual situação você deve indicar o Russo?',
-      options: ['A empresa recebe leads, responde tarde, não usa CRM e esquece follow-ups', 'A empresa precisa trocar uma janela', 'A pessoa procura seguro automóvel'],
+      options: ['A empresa recebe leads, responde tarde e esquece follow-ups', 'A empresa precisa trocar uma janela', 'A pessoa procura seguro automóvel'],
       correct: 0,
       power: 'double',
-      explanation: 'Quando há interesse, mas o processo comercial perde oportunidades, o Russo pode organizar CRM, automação e acompanhamento.'
+      explanation: 'Quando há interesse, mas o processo comercial perde oportunidades, o Russo pode organizar automação e acompanhamento.'
     }
   ];
 }
@@ -86,6 +88,19 @@ export function answerCheckpoint(state, question, selectedIndex) {
     correctAnswers: state.correctAnswers + 1,
     power: question.power || state.power,
     shield: question.power === 'shield' ? state.shield + 1 : state.shield
+  };
+}
+
+export function hitObstacle(state) {
+  if (state.gameOver) return { ...state };
+  if (state.shield > 0) return { ...state, shield: state.shield - 1, score: state.score + 40 };
+  const lives = Math.max(0, state.lives - 1);
+  return {
+    ...state,
+    lives,
+    gameOver: lives === 0,
+    running: lives === 0 ? false : state.running,
+    score: Math.max(0, state.score - 120)
   };
 }
 
@@ -108,18 +123,20 @@ function roundedRect(ctx, x, y, width, height, radius) {
 }
 
 export class BNIGame {
-  constructor({ canvas, member, members, faceImage, onQuestion, onFinish }) {
+  constructor({ canvas, member, members, runnerImage, onQuestion, onFinish, onGameOver }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.member = member;
     this.questions = buildGameQuestions(member, members);
-    this.faceImage = faceImage;
+    this.runnerImage = runnerImage;
     this.onQuestion = onQuestion;
     this.onFinish = onFinish;
+    this.onGameOver = onGameOver;
     this.state = createGameState();
     this.lastFrame = 0;
     this.questionOpen = false;
     this.finishSent = false;
+    this.gameOverSent = false;
     this.damageLock = 0;
     this.obstacles = [1_050, 2_500, 4_150, 5_950, 7_650, 9_400, 11_050].map((x, index) => ({ x, width: 88 + index % 2 * 18, height: 48 + index % 3 * 8, hit: false, label: ['INDICAÇÃO VAGA', 'SEM FOLLOW-UP', 'CONTATO FRIO'][index % 3] }));
     this.collectibles = Array.from({ length: 25 }, (_, index) => ({ x: 650 + index * 430, y: 250 - (index % 3) * 34, taken: false }));
@@ -135,7 +152,7 @@ export class BNIGame {
   }
 
   start() {
-    if (this.state.won) this.reset();
+    if (this.state.won || this.state.gameOver) this.reset();
     this.state = { ...this.state, running: true, stage: 'referencias', startedAt: performance.now() };
     this.lastFrame = performance.now();
     requestAnimationFrame((time) => this.loop(time));
@@ -147,6 +164,7 @@ export class BNIGame {
     this.collectibles.forEach((item) => { item.taken = false; });
     this.questionOpen = false;
     this.finishSent = false;
+    this.gameOverSent = false;
     this.damageLock = 0;
     this.draw(performance.now());
   }
@@ -172,7 +190,7 @@ export class BNIGame {
     this.questionOpen = false;
     this.onQuestion?.({ open: false, correct, explanation: question.explanation, power: correct ? question.power : null });
     setTimeout(() => {
-      if (!this.state.won) {
+      if (!this.state.won && !this.state.gameOver) {
         this.state.running = true;
         this.lastFrame = performance.now();
         requestAnimationFrame((time) => this.loop(time));
@@ -181,7 +199,7 @@ export class BNIGame {
   }
 
   loop(time) {
-    if (!this.state.running || this.questionOpen || this.state.won) return;
+    if (!this.state.running || this.questionOpen || this.state.won || this.state.gameOver) return;
     const delta = Math.min(32, Math.max(0, time - this.lastFrame));
     this.lastFrame = time;
     this.update(delta, time);
@@ -210,12 +228,20 @@ export class BNIGame {
       }
     }
     if (time > this.damageLock) {
-      const obstacle = this.obstacles.find((item) => !item.hit && next.x + 32 > item.x && next.x - 26 < item.x + item.width && next.y > GROUND_Y - item.height - 48);
+      const obstacle = this.obstacles.find((item) => !item.hit && next.grounded && next.x + 32 > item.x && next.x < item.x + 28);
       if (obstacle) {
         obstacle.hit = true;
         this.damageLock = time + 1_100;
-        if (next.shield > 0) next = { ...next, shield: next.shield - 1, score: next.score + 40 };
-        else next = { ...next, score: Math.max(0, next.score - 120) };
+        next = hitObstacle(next);
+        if (next.gameOver) {
+          this.state = next;
+          this.syncDataset();
+          if (!this.gameOverSent) {
+            this.gameOverSent = true;
+            this.onGameOver?.(next);
+          }
+          return;
+        }
       }
     }
     const cp = CHECKPOINTS[next.checkpoint];
@@ -242,16 +268,22 @@ export class BNIGame {
     data.distance = String(Math.round(this.state.x));
     data.question = String(this.questionOpen);
     data.correctAnswers = String(this.state.correctAnswers);
+    data.lives = String(this.state.lives);
+    data.gameOver = String(this.state.gameOver);
     this.canvas.dispatchEvent(new CustomEvent('bni-game-state', { detail: {
       score: this.state.score,
       referrals: this.state.referrals,
       correctAnswers: this.state.correctAnswers,
+      lives: this.state.lives,
+      gameOver: this.state.gameOver,
       stage: this.state.stage,
       won: this.state.won
     } }));
     this.canvas.setAttribute('aria-label', this.state.won
       ? `Corrida concluída com ${this.state.score} pontos.`
-      : `Corrida das referências. ${this.state.score} pontos e ${this.state.referrals} referências.`);
+      : this.state.gameOver
+        ? 'Corrida encerrada. Você perdeu as três vidas.'
+        : `Corrida das referências. ${this.state.score} pontos, ${this.state.referrals} referências e ${this.state.lives} vidas.`);
   }
 
   draw(time) {
@@ -337,34 +369,25 @@ export class BNIGame {
 
   drawRunner(ctx, x, y, time) {
     const phase = time / 105;
-    const swing = Math.sin(phase) * 25;
     const bounce = Math.abs(Math.sin(phase)) * 4;
-    ctx.save(); ctx.translate(x, y - bounce); ctx.scale(1.15, 1.15);
+    ctx.save();
+    ctx.fillStyle = 'rgba(19,34,61,.2)';
+    ctx.beginPath(); ctx.ellipse(x + 4, GROUND_Y + 8, 44, 7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.translate(x, y - bounce);
     if (this.state.power === 'boost' && performance.now() < this.state.powerUntil) {
       ctx.strokeStyle = 'rgba(210,163,58,.55)'; ctx.lineWidth = 6;
       for (let line = 0; line < 4; line += 1) { ctx.beginPath(); ctx.moveTo(-80 - line * 20, -55 + line * 18); ctx.lineTo(-25, -55 + line * 18); ctx.stroke(); }
     }
-    ctx.strokeStyle = '#111827'; ctx.lineWidth = 18; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, -58); ctx.lineTo(-12 + swing * .35, -8); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(3, -58); ctx.lineTo(20 - swing * .35, -8); ctx.stroke();
-    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 13;
-    ctx.beginPath(); ctx.moveTo(-12 + swing * .35, -8); ctx.lineTo(-24 + swing * .5, 0); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(20 - swing * .35, -8); ctx.lineTo(31 - swing * .5, 0); ctx.stroke();
-    ctx.fillStyle = '#111111';
-    roundedRect(ctx, -27, -137, 58, 82, 18); ctx.fill();
-    ctx.strokeStyle = '#d7a97d'; ctx.lineWidth = 13;
-    ctx.beginPath(); ctx.moveTo(-18, -117); ctx.lineTo(-43 - swing * .35, -78); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(20, -116); ctx.lineTo(48 + swing * .35, -85); ctx.stroke();
-    ctx.fillStyle = '#c38b61'; ctx.beginPath(); ctx.arc(-44 - swing * .35, -77, 8, 0, Math.PI * 2); ctx.arc(49 + swing * .35, -84, 8, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(2, -157, 32, 0, Math.PI * 2); ctx.clip();
-    if (this.faceImage?.complete && this.faceImage.naturalWidth) {
-      const sw = this.faceImage.naturalWidth * .58;
-      const sh = this.faceImage.naturalHeight * .66;
-      ctx.drawImage(this.faceImage, this.faceImage.naturalWidth * .2, 0, sw, sh, -34, -191, 72, 78);
-    } else { ctx.fillStyle = '#d7a97d'; ctx.fillRect(-34, -191, 72, 78); }
-    ctx.restore();
-    ctx.save(); ctx.translate(x, y - bounce); ctx.scale(1.15, 1.15);
-    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(2, -157, 34, 0, Math.PI * 2); ctx.stroke();
+    if (this.runnerImage?.complete && this.runnerImage.naturalWidth) {
+      const height = 220;
+      const width = height * this.runnerImage.naturalWidth / this.runnerImage.naturalHeight;
+      ctx.drawImage(this.runnerImage, -width * .48, -height + 14, width, height);
+    } else {
+      ctx.fillStyle = '#111827';
+      roundedRect(ctx, -28, -145, 62, 145, 18); ctx.fill();
+    }
     ctx.restore();
   }
 
@@ -374,6 +397,6 @@ export class BNIGame {
     ctx.textAlign = 'left'; ctx.fillStyle = '#13223d'; ctx.font = '900 25px system-ui'; ctx.fillText('CORRIDA DAS REFERÊNCIAS', 48, 52);
     ctx.font = '800 18px system-ui'; ctx.fillStyle = '#4e5b70'; ctx.fillText(this.member.company, 48, 78);
     ctx.textAlign = 'right'; ctx.fillStyle = '#a71930'; ctx.font = '900 27px system-ui'; ctx.fillText(`${this.state.score} PTS`, 910, 52);
-    ctx.fillStyle = '#13223d'; ctx.font = '800 18px system-ui'; ctx.fillText(`${this.state.referrals} REF  •  ${this.state.correctAnswers}/6`, 910, 79);
+    ctx.fillStyle = '#13223d'; ctx.font = '800 18px system-ui'; ctx.fillText(`${this.state.referrals} REF  •  ${this.state.correctAnswers}/6  •  ${this.state.lives} VIDAS`, 910, 79);
   }
 }

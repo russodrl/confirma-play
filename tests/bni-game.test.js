@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { members } from '../lib/bni-members.js';
-import { buildGameQuestions, createGameState, answerCheckpoint, advanceGame } from '../public/bni-up-4-setembro/game.js';
+import { buildGameQuestions, createGameState, answerCheckpoint, advanceGame, hitObstacle } from '../public/bni-up-4-setembro/game.js';
 
 test('jogo cria seis checkpoints sobre indicação ao Russo, IA e marketing digital', () => {
   const member = members.find((item) => item.slug === 'amilcar-cesar');
@@ -12,8 +12,8 @@ test('jogo cria seis checkpoints sobre indicação ao Russo, IA e marketing digi
   assert.match(content, /inteligência artificial|\bIA\b/i);
   assert.match(content, /marketing digital/i);
   assert.match(content, /indicar|indicação/i);
-  assert.match(content, /Pipedrive/);
   assert.match(content, /Make/);
+  assert.doesNotMatch(content, /\bCRM\b|Pipedrive/i);
   assert.doesNotMatch(content, /Digital Roots Lab/i);
   for (const question of questions) {
     assert.equal(question.personalized, false);
@@ -49,4 +49,28 @@ test('estado inicial mantém jogo parado até liberação externa', () => {
   assert.equal(initial.won, false);
   assert.equal(initial.score, 0);
   assert.equal(initial.correctAnswers, 0);
+  assert.equal(initial.lives, 3);
+  assert.equal(initial.gameOver, false);
+});
+
+test('três colisões sem escudo encerram a partida', () => {
+  const initial = { ...createGameState(), running: true, score: 500 };
+  const first = hitObstacle(initial);
+  assert.equal(first.lives, 2);
+  assert.equal(first.gameOver, false);
+  const second = hitObstacle(first);
+  assert.equal(second.lives, 1);
+  assert.equal(second.gameOver, false);
+  const third = hitObstacle(second);
+  assert.equal(third.lives, 0);
+  assert.equal(third.gameOver, true);
+  assert.equal(third.running, false);
+});
+
+test('escudo absorve colisão sem retirar vida', () => {
+  const protectedState = { ...createGameState(), running: true, shield: 1 };
+  const afterHit = hitObstacle(protectedState);
+  assert.equal(afterHit.lives, 3);
+  assert.equal(afterHit.shield, 0);
+  assert.equal(afterHit.gameOver, false);
 });

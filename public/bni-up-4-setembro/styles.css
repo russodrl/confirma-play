@@ -175,6 +175,9 @@ blockquote { margin: 0; max-width: 1080px; color: var(--navy); font-size: clamp(
 .game-html-hud strong { color: var(--red); font-size: 18px; line-height: 1; }
 .game-html-hud span { color: var(--navy); font-size: 13px; font-weight: 900; }
 .game-lock { position: absolute; z-index: 4; inset: 0; display: grid; place-content: center; gap: 9px; padding: 20px; text-align: center; color: #fff; background: rgba(19,34,61,.88); backdrop-filter: blur(8px); }
+.game-over-panel { position: absolute; z-index: 5; inset: 0; display: grid; place-content: center; gap: 9px; padding: 20px; text-align: center; color: #fff; background: rgba(114,16,34,.9); backdrop-filter: blur(7px); }
+.game-over-panel strong { font-size: clamp(22px, 4vw, 34px); }
+.game-over-panel small { color: rgba(255,255,255,.82); font-size: 14px; }
 .lock-icon { font-size: 34px; }
 .game-lock strong { font-size: clamp(21px, 4vw, 32px); }
 .game-lock small { color: #cbd4e1; }

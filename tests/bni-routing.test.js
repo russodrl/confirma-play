@@ -5,6 +5,8 @@ import { readFile } from 'node:fs/promises';
 const config = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
 const html = await readFile(new URL('../public/bni-up-4-setembro/index.html', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/bni-up-4-setembro/app.js', import.meta.url), 'utf8');
+const game = await readFile(new URL('../public/bni-up-4-setembro/game.js', import.meta.url), 'utf8');
+const detailedRunner = await readFile(new URL('../public/bni-up-4-setembro/assets/russo-runner-detailed.webp', import.meta.url));
 
 test('rota limpa do BNI UP resolve explicitamente para o index do subdiretório', () => {
   const route = config.rewrites?.find((item) => item.source === '/bni-up-4-setembro');
@@ -60,4 +62,20 @@ test('controle e liberação do jogo usam a nova sequência de dezessete slides'
   assert.match(app, /const phaseBySlide = \[[^\]]+\]/);
   assert.match(app, /Math\.min\(16, state\.slide \+ 1\)/);
   assert.match(app, /submitState\(\{ slide: 14, phase: 'game', gameOpen: true \}\)/);
+});
+
+test('jogo mostra três vidas, game over e usa o novo boneco detalhado', () => {
+  assert.match(html, /id="gameHudLives">❤️❤️❤️<\/span>/);
+  assert.match(app, /russo-runner-detailed\.webp/);
+  assert.match(app, /onGameOver: handleGameOver/);
+  assert.match(game, /this\.runnerImage/);
+  assert.match(game, /gameOver/);
+  assert.ok(detailedRunner.length > 100_000);
+  assert.equal(detailedRunner.subarray(0, 4).toString('ascii'), 'RIFF');
+  assert.equal(detailedRunner.subarray(8, 12).toString('ascii'), 'WEBP');
+});
+
+test('apresentação e perguntas não mencionam CRM nem Pipedrive', () => {
+  assert.doesNotMatch(html, /\bCRM\b|Pipedrive/i);
+  assert.doesNotMatch(game, /\bCRM\b|Pipedrive/i);
 });
