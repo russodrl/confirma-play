@@ -7,7 +7,8 @@ import {
   issueParticipantToken,
   verifyParticipantToken,
   normalizeScore,
-  rankScores
+  rankScores,
+  createAsyncTtlCache
 } from '../lib/bni-live.js';
 
 test('estado padrão mantém participantes no lobby com jogo bloqueado', () => {
@@ -68,4 +69,25 @@ test('ranking mantém melhor resultado por jogador e desempata por tempo', () =>
   ]);
   assert.deepEqual(ranked.map((entry) => entry.playerId), ['b', 'a', 'c']);
   assert.deepEqual(ranked.map((entry) => entry.position), [1, 2, 3]);
+});
+
+test('cache assíncrono agrupa consultas simultâneas e respeita expiração e limpeza', async () => {
+  let now = 1_000;
+  let calls = 0;
+  const cached = createAsyncTtlCache(async () => {
+    calls += 1;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    return { calls };
+  }, 1_000, () => now);
+
+  const simultaneous = await Promise.all(Array.from({ length: 30 }, () => cached()));
+  assert.equal(calls, 1);
+  assert.ok(simultaneous.every((value) => value.calls === 1));
+
+  now = 1_999;
+  assert.equal((await cached()).calls, 1);
+  now = 2_001;
+  assert.equal((await cached()).calls, 2);
+  cached.clear();
+  assert.equal((await cached()).calls, 3);
 });

@@ -6,6 +6,7 @@ const config = JSON.parse(await readFile(new URL('../vercel.json', import.meta.u
 const html = await readFile(new URL('../public/bni-up-4-setembro/index.html', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/bni-up-4-setembro/app.js', import.meta.url), 'utf8');
 const game = await readFile(new URL('../public/bni-up-4-setembro/game.js', import.meta.url), 'utf8');
+const liveApi = await readFile(new URL('../api/bni-live.js', import.meta.url), 'utf8');
 const detailedRunner = await readFile(new URL('../public/bni-up-4-setembro/assets/russo-runner-detailed.webp', import.meta.url));
 
 test('rota limpa do BNI UP resolve explicitamente para o index do subdiretório', () => {
@@ -35,6 +36,16 @@ test('sincronização compartilha cache e nunca sobrepõe requisições', () => 
   assert.doesNotMatch(app, /setInterval\(pollOnce/);
   assert.match(app, /setTimeout\(schedulePoll,/);
   assert.match(app, /pollInFlight/);
+});
+
+test('API agrupa leituras simultâneas e evita consultar metadados a cada celular', () => {
+  assert.match(liveApi, /createAsyncTtlCache/);
+  assert.match(liveApi, /getCachedSnapshot/);
+  assert.match(liveApi, /ensureStorageReady/);
+  assert.match(liveApi, /s-maxage=2/);
+  const getBranch = liveApi.slice(liveApi.indexOf("if (req.method === 'GET')"), liveApi.indexOf("if (req.method !== 'POST')"));
+  assert.doesNotMatch(getBranch, /ensureTabs\(/);
+  assert.doesNotMatch(getBranch, /readSnapshot\(/);
 });
 
 test('entrada usa um único campo de nome com empresa na sugestão e opção de visitante', () => {

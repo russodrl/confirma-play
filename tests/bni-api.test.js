@@ -68,3 +68,39 @@ test('GET sem planilha configurada devolve estado seguro e backend degradado', a
     for (const key of keys) if (saved[key] !== undefined) process.env[key] = saved[key];
   }
 });
+
+test('trinta celulares simultâneos compartilham token, preparação e leitura da planilha', async () => {
+  const keys = ['CONFIRMA_PLAY_SHEETS_ID', 'CONFIRMA_PLAY_SHEETS_CLIENT_ID', 'CONFIRMA_PLAY_SHEETS_CLIENT_SECRET', 'CONFIRMA_PLAY_SHEETS_REFRESH_TOKEN'];
+  const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+  Object.assign(process.env, {
+    CONFIRMA_PLAY_SHEETS_ID: 'sheet-test',
+    CONFIRMA_PLAY_SHEETS_CLIENT_ID: 'client-test',
+    CONFIRMA_PLAY_SHEETS_CLIENT_SECRET: 'secret-test',
+    CONFIRMA_PLAY_SHEETS_REFRESH_TOKEN: 'refresh-test'
+  });
+  const originalFetch = global.fetch;
+  const calls = [];
+  global.fetch = async (url) => {
+    calls.push(String(url));
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    if (String(url).includes('oauth2.googleapis.com')) return { ok: true, json: async () => ({ access_token: 'access-test' }) };
+    if (String(url).includes('fields=sheets.properties.title')) return { ok: true, json: async () => ({ sheets: [{ properties: { title: 'BNI Live' } }, { properties: { title: 'BNI Ranking' } }] }) };
+    if (String(url).includes('values:batchGet')) return { ok: true, json: async () => ({ valueRanges: [{ values: [[3, 'presentation', false, 9, '2026-09-04T07:00:00.000Z']] }, { values: [] }] }) };
+    throw new Error(`URL inesperada: ${url}`);
+  };
+  try {
+    const responses = Array.from({ length: 30 }, responseHarness);
+    await Promise.all(responses.map((res) => handler({ method: 'GET', headers: {}, query: {} }, res)));
+    assert.ok(responses.every((res) => res.statusCode === 200 && res.payload.state.slide === 3));
+    assert.ok(responses.every((res) => res.headers['cache-control'] === 'public, s-maxage=2, stale-while-revalidate=5'));
+    assert.equal(calls.filter((url) => url.includes('oauth2.googleapis.com')).length, 1);
+    assert.equal(calls.filter((url) => url.includes('fields=sheets.properties.title')).length, 1);
+    assert.equal(calls.filter((url) => url.includes('values:batchGet')).length, 1);
+  } finally {
+    global.fetch = originalFetch;
+    for (const key of keys) {
+      if (saved[key] === undefined) delete process.env[key];
+      else process.env[key] = saved[key];
+    }
+  }
+});
