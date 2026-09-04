@@ -193,7 +193,7 @@ function renderPersonalized(member) {
 function initializeGame(member) {
   if (game) return;
   const face = new Image();
-  face.src = './assets/russo-reference.webp';
+  face.src = '/bni-up-4-setembro/assets/russo-reference.webp';
   game = new BNIGame({
     canvas,
     member,
